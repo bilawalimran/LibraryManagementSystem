@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/App.WindowsApp/Views/BookView.cs
+/App.WindowsApp/Views/BookView.Designer.cs
+/App.WindowsApp/Views/BookView.resx
