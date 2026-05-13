@@ -1,10 +1,12 @@
 ﻿using App.Core.Data;
+using App.Core.Enums;
 using App.Core.Interfaces;
 using App.Core.Models;
 using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
 
-namespace LibraryManagementSystem.Infrastructure.Services
+namespace LibraryManagementSystem.Core.Services
 {
     public class BookService : IBookService
     {
@@ -13,11 +15,17 @@ namespace LibraryManagementSystem.Infrastructure.Services
             using var conn = DbHelper.GetConnection();
             conn.Open();
 
-            string query = "INSERT INTO Books (Title, Author, Quantity) VALUES (@Title, @Author, @Quantity)";
+            string query = @"INSERT INTO Books
+                            (Title, Author, Category, PublishedDate, Quantity)
+                            VALUES
+                            (@Title, @Author, @Category, @PublishedDate, @Quantity)";
+
             using var cmd = new SqlCommand(query, conn);
 
             cmd.Parameters.AddWithValue("@Title", book.Title);
             cmd.Parameters.AddWithValue("@Author", book.Author);
+            cmd.Parameters.AddWithValue("@Category", book.Category.ToString());
+            cmd.Parameters.AddWithValue("@PublishedDate", book.PublishedDate);
             cmd.Parameters.AddWithValue("@Quantity", book.Quantity);
 
             cmd.ExecuteNonQuery();
@@ -28,12 +36,21 @@ namespace LibraryManagementSystem.Infrastructure.Services
             using var conn = DbHelper.GetConnection();
             conn.Open();
 
-            string query = "UPDATE Books SET Title=@Title, Author=@Author, Quantity=@Quantity WHERE Id=@Id";
+            string query = @"UPDATE Books
+                             SET Title=@Title,
+                                 Author=@Author,
+                                 Category=@Category,
+                                 PublishedDate=@PublishedDate,
+                                 Quantity=@Quantity
+                             WHERE Id=@Id";
+
             using var cmd = new SqlCommand(query, conn);
 
             cmd.Parameters.AddWithValue("@Id", book.Id);
             cmd.Parameters.AddWithValue("@Title", book.Title);
             cmd.Parameters.AddWithValue("@Author", book.Author);
+            cmd.Parameters.AddWithValue("@Category", book.Category.ToString());
+            cmd.Parameters.AddWithValue("@PublishedDate", book.PublishedDate);
             cmd.Parameters.AddWithValue("@Quantity", book.Quantity);
 
             cmd.ExecuteNonQuery();
@@ -45,9 +62,10 @@ namespace LibraryManagementSystem.Infrastructure.Services
             conn.Open();
 
             string query = "DELETE FROM Books WHERE Id=@Id";
-            using var cmd = new SqlCommand(query, conn);
 
+            using var cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Id", id);
+
             cmd.ExecuteNonQuery();
         }
 
@@ -59,6 +77,7 @@ namespace LibraryManagementSystem.Infrastructure.Services
             conn.Open();
 
             string query = "SELECT * FROM Books";
+
             using var cmd = new SqlCommand(query, conn);
             using var reader = cmd.ExecuteReader();
 
@@ -69,6 +88,9 @@ namespace LibraryManagementSystem.Infrastructure.Services
                     Id = (int)reader["Id"],
                     Title = reader["Title"].ToString(),
                     Author = reader["Author"].ToString(),
+                    Category = Enum.Parse<BookCategory>(
+                        reader["Category"].ToString()),
+                    PublishedDate = (DateTime)reader["PublishedDate"],
                     Quantity = (int)reader["Quantity"]
                 });
             }
@@ -82,6 +104,7 @@ namespace LibraryManagementSystem.Infrastructure.Services
             conn.Open();
 
             string query = "SELECT * FROM Books WHERE Id=@Id";
+
             using var cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Id", id);
 
@@ -94,11 +117,45 @@ namespace LibraryManagementSystem.Infrastructure.Services
                     Id = (int)reader["Id"],
                     Title = reader["Title"].ToString(),
                     Author = reader["Author"].ToString(),
+                    Category = Enum.Parse<BookCategory>(
+                        reader["Category"].ToString()),
+                    PublishedDate = (DateTime)reader["PublishedDate"],
                     Quantity = (int)reader["Quantity"]
                 };
             }
 
             return null;
+        }
+
+        public List<Book> SearchBooks(string filterType, string keyword)
+        {
+            var books = new List<Book>();
+
+            using var conn = DbHelper.GetConnection();
+            conn.Open();
+
+            string query = $"SELECT * FROM Books WHERE {filterType} LIKE @Keyword";
+
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@Keyword", "%" + keyword + "%");
+
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                books.Add(new Book
+                {
+                    Id = (int)reader["Id"],
+                    Title = reader["Title"].ToString(),
+                    Author = reader["Author"].ToString(),
+                    Category = Enum.Parse<BookCategory>(
+                        reader["Category"].ToString()),
+                    PublishedDate = (DateTime)reader["PublishedDate"],
+                    Quantity = (int)reader["Quantity"]
+                });
+            }
+
+            return books;
         }
     }
 }

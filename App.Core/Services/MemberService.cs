@@ -4,7 +4,7 @@ using App.Core.Models;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 
-namespace LibraryManagementSystem.Infrastructure.Services
+namespace LibraryManagementSystem.Core.Services
 {
     public class MemberService : IMemberService
     {
@@ -13,12 +13,18 @@ namespace LibraryManagementSystem.Infrastructure.Services
             using var conn = DbHelper.GetConnection();
             conn.Open();
 
-            string query = "INSERT INTO Members (Name, Email, Phone) VALUES (@Name, @Email, @Phone)";
+            string query = @"INSERT INTO Members
+                            (Name, Email, Phone, Address)
+                            VALUES
+                            (@Name, @Email, @Phone, @Address)";
+
             using var cmd = new SqlCommand(query, conn);
 
             cmd.Parameters.AddWithValue("@Name", member.Name);
             cmd.Parameters.AddWithValue("@Email", member.Email);
             cmd.Parameters.AddWithValue("@Phone", member.Phone);
+            cmd.Parameters.AddWithValue("@Address", member.Address);
+
             cmd.ExecuteNonQuery();
         }
 
@@ -27,13 +33,20 @@ namespace LibraryManagementSystem.Infrastructure.Services
             using var conn = DbHelper.GetConnection();
             conn.Open();
 
-            string query = "UPDATE Members SET Name=@Name, Email=@Email WHERE Id=@Id";
+            string query = @"UPDATE Members
+                             SET Name=@Name,
+                                 Email=@Email,
+                                 Phone=@Phone,
+                                 Address=@Address
+                             WHERE Id=@Id";
+
             using var cmd = new SqlCommand(query, conn);
 
             cmd.Parameters.AddWithValue("@Id", member.Id);
             cmd.Parameters.AddWithValue("@Name", member.Name);
             cmd.Parameters.AddWithValue("@Email", member.Email);
             cmd.Parameters.AddWithValue("@Phone", member.Phone);
+            cmd.Parameters.AddWithValue("@Address", member.Address);
 
             cmd.ExecuteNonQuery();
         }
@@ -44,9 +57,10 @@ namespace LibraryManagementSystem.Infrastructure.Services
             conn.Open();
 
             string query = "DELETE FROM Members WHERE Id=@Id";
-            using var cmd = new SqlCommand(query, conn);
 
+            using var cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Id", id);
+
             cmd.ExecuteNonQuery();
         }
 
@@ -58,6 +72,7 @@ namespace LibraryManagementSystem.Infrastructure.Services
             conn.Open();
 
             string query = "SELECT * FROM Members";
+
             using var cmd = new SqlCommand(query, conn);
             using var reader = cmd.ExecuteReader();
 
@@ -68,11 +83,39 @@ namespace LibraryManagementSystem.Infrastructure.Services
                     Id = (int)reader["Id"],
                     Name = reader["Name"].ToString(),
                     Email = reader["Email"].ToString(),
-                    Phone = reader["Phone"].ToString()
+                    Phone = reader["Phone"].ToString(),
+                    Address = reader["Address"].ToString()
                 });
             }
 
             return members;
+        }
+
+        public Member GetMemberById(int id)
+        {
+            using var conn = DbHelper.GetConnection();
+            conn.Open();
+
+            string query = "SELECT * FROM Members WHERE Id=@Id";
+
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@Id", id);
+
+            using var reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return new Member
+                {
+                    Id = (int)reader["Id"],
+                    Name = reader["Name"].ToString(),
+                    Email = reader["Email"].ToString(),
+                    Phone = reader["Phone"].ToString(),
+                    Address = reader["Address"].ToString()
+                };
+            }
+
+            return null;
         }
     }
 }
