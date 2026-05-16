@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IssueView));
             tableLayoutPanel = new TableLayoutPanel();
             toolStripIssues = new ToolStrip();
             toolStripButtonIssue = new ToolStripButton();
@@ -62,9 +61,9 @@
             tableLayoutPanel.Location = new Point(0, 0);
             tableLayoutPanel.Name = "tableLayoutPanel";
             tableLayoutPanel.RowCount = 3;
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 20F));
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 70F));
+            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 9.995673F));
+            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 11.2505407F));
+            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 78.75379F));
             tableLayoutPanel.Size = new Size(674, 462);
             tableLayoutPanel.TabIndex = 0;
             // 
@@ -80,7 +79,7 @@
             // 
             // toolStripButtonIssue
             // 
-            toolStripButtonIssue.Image = (Image)resources.GetObject("toolStripButtonIssue.Image");
+            toolStripButtonIssue.Image = Properties.Resources.books_medical;
             toolStripButtonIssue.ImageTransparentColor = Color.Magenta;
             toolStripButtonIssue.Name = "toolStripButtonIssue";
             toolStripButtonIssue.Size = new Size(83, 43);
@@ -90,7 +89,7 @@
             // 
             // toolStripButtonReturn
             // 
-            toolStripButtonReturn.Image = (Image)resources.GetObject("toolStripButtonReturn.Image");
+            toolStripButtonReturn.Image = Properties.Resources.undo;
             toolStripButtonReturn.ImageTransparentColor = Color.Magenta;
             toolStripButtonReturn.Name = "toolStripButtonReturn";
             toolStripButtonReturn.Size = new Size(92, 43);
@@ -100,8 +99,9 @@
             // 
             // toolStripButtonDelete
             // 
+            toolStripButtonDelete.Image = Properties.Resources.trash1;
             toolStripButtonDelete.Name = "toolStripButtonDelete";
-            toolStripButtonDelete.Size = new Size(44, 43);
+            toolStripButtonDelete.Size = new Size(60, 43);
             toolStripButtonDelete.Text = "Delete";
             toolStripButtonDelete.ToolTipText = "Delete";
             toolStripButtonDelete.Click += toolStripButtonDelete_Click;
@@ -113,7 +113,7 @@
             // 
             // toolStripButtonRefresh
             // 
-            toolStripButtonRefresh.Image = (Image)resources.GetObject("toolStripButtonRefresh.Image");
+            toolStripButtonRefresh.Image = Properties.Resources.refresh;
             toolStripButtonRefresh.ImageTransparentColor = Color.Magenta;
             toolStripButtonRefresh.Name = "toolStripButtonRefresh";
             toolStripButtonRefresh.Size = new Size(66, 43);
@@ -127,7 +127,7 @@
             flowLayoutPanel.Dock = DockStyle.Fill;
             flowLayoutPanel.Location = new Point(3, 49);
             flowLayoutPanel.Name = "flowLayoutPanel";
-            flowLayoutPanel.Size = new Size(668, 86);
+            flowLayoutPanel.Size = new Size(668, 45);
             flowLayoutPanel.TabIndex = 1;
             // 
             // labelSearch
@@ -155,13 +155,13 @@
             dataGridViewIssues.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewIssues.Columns.AddRange(new DataGridViewColumn[] { Id, Book, Member, IssueDate, ReturnDate });
             dataGridViewIssues.Dock = DockStyle.Fill;
-            dataGridViewIssues.Location = new Point(3, 141);
+            dataGridViewIssues.Location = new Point(3, 100);
             dataGridViewIssues.MultiSelect = false;
             dataGridViewIssues.Name = "dataGridViewIssues";
             dataGridViewIssues.ReadOnly = true;
             dataGridViewIssues.RowHeadersVisible = false;
             dataGridViewIssues.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewIssues.Size = new Size(668, 318);
+            dataGridViewIssues.Size = new Size(668, 359);
             dataGridViewIssues.TabIndex = 2;
             // 
             // Id

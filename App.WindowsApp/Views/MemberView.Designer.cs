@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MemberView));
             tableLayoutPanel = new TableLayoutPanel();
             toolStripMembers = new ToolStrip();
             toolStripButtonAdd = new ToolStripButton();
@@ -83,7 +82,7 @@
             // 
             // toolStripButtonAdd
             // 
-            toolStripButtonAdd.Image = (Image)resources.GetObject("toolStripButtonAdd.Image");
+            toolStripButtonAdd.Image = Properties.Resources.plus;
             toolStripButtonAdd.ImageTransparentColor = Color.Magenta;
             toolStripButtonAdd.Name = "toolStripButtonAdd";
             toolStripButtonAdd.Size = new Size(49, 37);
@@ -93,7 +92,7 @@
             // 
             // toolStripButtonEdit
             // 
-            toolStripButtonEdit.Image = (Image)resources.GetObject("toolStripButtonEdit.Image");
+            toolStripButtonEdit.Image = Properties.Resources.pencil;
             toolStripButtonEdit.ImageTransparentColor = Color.Magenta;
             toolStripButtonEdit.Name = "toolStripButtonEdit";
             toolStripButtonEdit.Size = new Size(47, 37);
@@ -103,7 +102,7 @@
             // 
             // toolStripButtonView
             // 
-            toolStripButtonView.Image = (Image)resources.GetObject("toolStripButtonView.Image");
+            toolStripButtonView.Image = Properties.Resources.eye;
             toolStripButtonView.ImageTransparentColor = Color.Magenta;
             toolStripButtonView.Name = "toolStripButtonView";
             toolStripButtonView.Size = new Size(52, 37);
@@ -112,7 +111,7 @@
             // 
             // toolStripButtonDelete
             // 
-            toolStripButtonDelete.Image = (Image)resources.GetObject("toolStripButtonDelete.Image");
+            toolStripButtonDelete.Image = Properties.Resources.trash;
             toolStripButtonDelete.ImageTransparentColor = Color.Magenta;
             toolStripButtonDelete.Name = "toolStripButtonDelete";
             toolStripButtonDelete.Size = new Size(60, 37);
@@ -188,7 +187,7 @@
             // MemberName
             // 
             MemberName.HeaderText = "Name";
-            MemberName.Name = "Name";
+            MemberName.Name = "MemberName";
             MemberName.ReadOnly = true;
             // 
             // Phone
