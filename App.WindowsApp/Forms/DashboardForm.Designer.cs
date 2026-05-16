@@ -141,7 +141,7 @@
             Controls.Add(panelHeader);
             Name = "DashboardForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "DashboardForm";
+            Text = "Library Management System";
             panelHeader.ResumeLayout(false);
             panelHeader.PerformLayout();
             panelNavigation.ResumeLayout(false);
