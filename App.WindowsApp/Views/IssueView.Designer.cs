@@ -33,15 +33,16 @@
             toolStripIssues = new ToolStrip();
             toolStripButtonIssue = new ToolStripButton();
             toolStripButtonReturn = new ToolStripButton();
-            toolStripButtonRefresh = new ToolStripButton();
+            toolStripButtonDelete = new ToolStripButton();
             toolStripSeparator = new ToolStripSeparator();
+            toolStripButtonRefresh = new ToolStripButton();
             flowLayoutPanel = new FlowLayoutPanel();
             labelSearch = new Label();
             textBoxSearch = new TextBox();
             dataGridViewIssues = new DataGridView();
             Id = new DataGridViewTextBoxColumn();
-            BookId = new DataGridViewTextBoxColumn();
-            MemberId = new DataGridViewTextBoxColumn();
+            Book = new DataGridViewTextBoxColumn();
+            Member = new DataGridViewTextBoxColumn();
             IssueDate = new DataGridViewTextBoxColumn();
             ReturnDate = new DataGridViewTextBoxColumn();
             tableLayoutPanel.SuspendLayout();
@@ -70,7 +71,7 @@
             // toolStripIssues
             // 
             toolStripIssues.Dock = DockStyle.Fill;
-            toolStripIssues.Items.AddRange(new ToolStripItem[] { toolStripButtonIssue, toolStripButtonReturn, toolStripSeparator, toolStripButtonRefresh });
+            toolStripIssues.Items.AddRange(new ToolStripItem[] { toolStripButtonIssue, toolStripButtonReturn, toolStripButtonDelete, toolStripSeparator, toolStripButtonRefresh });
             toolStripIssues.Location = new Point(0, 0);
             toolStripIssues.Name = "toolStripIssues";
             toolStripIssues.Size = new Size(674, 46);
@@ -97,6 +98,19 @@
             toolStripButtonReturn.ToolTipText = "Return";
             toolStripButtonReturn.Click += toolStripButtonReturn_Click;
             // 
+            // toolStripButtonDelete
+            // 
+            toolStripButtonDelete.Name = "toolStripButtonDelete";
+            toolStripButtonDelete.Size = new Size(44, 43);
+            toolStripButtonDelete.Text = "Delete";
+            toolStripButtonDelete.ToolTipText = "Delete";
+            toolStripButtonDelete.Click += toolStripButtonDelete_Click;
+            // 
+            // toolStripSeparator
+            // 
+            toolStripSeparator.Name = "toolStripSeparator";
+            toolStripSeparator.Size = new Size(6, 46);
+            // 
             // toolStripButtonRefresh
             // 
             toolStripButtonRefresh.Image = (Image)resources.GetObject("toolStripButtonRefresh.Image");
@@ -105,11 +119,6 @@
             toolStripButtonRefresh.Size = new Size(66, 43);
             toolStripButtonRefresh.Text = "Refresh";
             toolStripButtonRefresh.Click += toolStripButtonRefresh_Click;
-            // 
-            // toolStripSeparator
-            // 
-            toolStripSeparator.Name = "toolStripSeparator";
-            toolStripSeparator.Size = new Size(6, 46);
             // 
             // flowLayoutPanel
             // 
@@ -144,7 +153,7 @@
             dataGridViewIssues.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewIssues.BackgroundColor = Color.White;
             dataGridViewIssues.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewIssues.Columns.AddRange(new DataGridViewColumn[] { Id, BookId, MemberId, IssueDate, ReturnDate });
+            dataGridViewIssues.Columns.AddRange(new DataGridViewColumn[] { Id, Book, Member, IssueDate, ReturnDate });
             dataGridViewIssues.Dock = DockStyle.Fill;
             dataGridViewIssues.Location = new Point(3, 141);
             dataGridViewIssues.MultiSelect = false;
@@ -159,26 +168,31 @@
             // 
             Id.HeaderText = "Id";
             Id.Name = "Id";
+            Id.ReadOnly = true;
             // 
-            // BookId
+            // Book
             // 
-            BookId.HeaderText = "BookId";
-            BookId.Name = "BookId";
+            Book.HeaderText = "Book";
+            Book.Name = "Book";
+            Book.ReadOnly = true;
             // 
-            // MemberId
+            // Member
             // 
-            MemberId.HeaderText = "MemberId";
-            MemberId.Name = "MemberId";
+            Member.HeaderText = "Member";
+            Member.Name = "Member";
+            Member.ReadOnly = true;
             // 
             // IssueDate
             // 
             IssueDate.HeaderText = "IssueDate";
             IssueDate.Name = "IssueDate";
+            IssueDate.ReadOnly = true;
             // 
             // ReturnDate
             // 
             ReturnDate.HeaderText = "ReturnDate";
             ReturnDate.Name = "ReturnDate";
+            ReturnDate.ReadOnly = true;
             // 
             // IssueView
             // 
@@ -203,6 +217,7 @@
         private ToolStrip toolStripIssues;
         private ToolStripButton toolStripButtonIssue;
         private ToolStripButton toolStripButtonReturn;
+        private ToolStripButton toolStripButtonDelete;
         private ToolStripButton toolStripButtonRefresh;
         private ToolStripSeparator toolStripSeparator;
         private FlowLayoutPanel flowLayoutPanel;
@@ -210,8 +225,8 @@
         private TextBox textBoxSearch;
         private DataGridView dataGridViewIssues;
         private DataGridViewTextBoxColumn Id;
-        private DataGridViewTextBoxColumn BookId;
-        private DataGridViewTextBoxColumn MemberId;
+        private DataGridViewTextBoxColumn Book;
+        private DataGridViewTextBoxColumn Member;
         private DataGridViewTextBoxColumn IssueDate;
         private DataGridViewTextBoxColumn ReturnDate;
     }

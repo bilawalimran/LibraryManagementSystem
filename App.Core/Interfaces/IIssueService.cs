@@ -10,6 +10,7 @@ namespace App.Core.Interfaces
         void IssueBook(IssueRecord issue);
         void ReturnBook(int issueId);
         void ReturnBook(int issueId, DateTime returnDate);
+        void DeleteIssue(int issueId);
         List<IssueRecord> GetAllIssues();
 
     }

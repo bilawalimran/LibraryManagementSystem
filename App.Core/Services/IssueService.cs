@@ -49,6 +49,19 @@ namespace LibraryManagementSystem.Infrastructure.Services
             cmd.ExecuteNonQuery();
         }
 
+        public void DeleteIssue(int issueId)
+        {
+            using var conn = DbHelper.GetConnection();
+            conn.Open();
+
+            string query = "DELETE FROM Issues WHERE Id=@Id";
+
+            using var cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@Id", issueId);
+
+            cmd.ExecuteNonQuery();
+        }
+
         public List<IssueRecord> GetAllIssues()
         {
             var issues = new List<IssueRecord>();
