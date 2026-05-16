@@ -14,19 +14,27 @@ namespace LibraryManagementSystem.Infrastructure.Services
             using var conn = DbHelper.GetConnection();
             conn.Open();
 
-            string query = @"INSERT INTO Issues(BookId, MemberId, IssueDate)
-                             VALUES(@BookId, @MemberId, @IssueDate)";
+            string query = @"INSERT INTO Issues(BookId, MemberId, IssueDate, ReturnDate)
+                             VALUES(@BookId, @MemberId, @IssueDate, @ReturnDate)";
 
             using var cmd = new SqlCommand(query, conn);
 
             cmd.Parameters.AddWithValue("@BookId", issue.BookId);
             cmd.Parameters.AddWithValue("@MemberId", issue.MemberId);
-            cmd.Parameters.AddWithValue("@IssueDate", DateTime.Now);
+            cmd.Parameters.AddWithValue("@IssueDate", issue.IssueDate == default ? DateTime.Now : issue.IssueDate);
+            cmd.Parameters.AddWithValue("@ReturnDate", issue.ReturnDate.HasValue
+                ? issue.ReturnDate.Value
+                : DBNull.Value);
 
             cmd.ExecuteNonQuery();
         }
 
         public void ReturnBook(int issueId)
+        {
+            ReturnBook(issueId, DateTime.Now);
+        }
+
+        public void ReturnBook(int issueId, DateTime returnDate)
         {
             using var conn = DbHelper.GetConnection();
             conn.Open();
@@ -36,7 +44,7 @@ namespace LibraryManagementSystem.Infrastructure.Services
             using var cmd = new SqlCommand(query, conn);
 
             cmd.Parameters.AddWithValue("@Id", issueId);
-            cmd.Parameters.AddWithValue("@ReturnDate", DateTime.Now);
+            cmd.Parameters.AddWithValue("@ReturnDate", returnDate);
 
             cmd.ExecuteNonQuery();
         }
@@ -49,6 +57,7 @@ namespace LibraryManagementSystem.Infrastructure.Services
             conn.Open();
 
             string query = "SELECT * FROM Issues";
+
             using var cmd = new SqlCommand(query, conn);
             using var reader = cmd.ExecuteReader();
 
@@ -60,7 +69,9 @@ namespace LibraryManagementSystem.Infrastructure.Services
                     BookId = (int)reader["BookId"],
                     MemberId = (int)reader["MemberId"],
                     IssueDate = (DateTime)reader["IssueDate"],
-                    ReturnDate = reader["ReturnDate"] as DateTime?
+                    ReturnDate = reader["ReturnDate"] == DBNull.Value
+                        ? null
+                        : (DateTime)reader["ReturnDate"]
                 });
             }
 

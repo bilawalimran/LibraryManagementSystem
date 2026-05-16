@@ -90,6 +90,7 @@
             buttonIssueReturn.TabIndex = 1;
             buttonIssueReturn.Text = "Issue/Return";
             buttonIssueReturn.UseVisualStyleBackColor = false;
+            buttonIssueReturn.Click += buttonIssueReturn_Click;
             // 
             // buttonMembers
             // 
@@ -102,6 +103,7 @@
             buttonMembers.TabIndex = 1;
             buttonMembers.Text = "Members";
             buttonMembers.UseVisualStyleBackColor = false;
+            buttonMembers.Click += buttonMembers_Click;
             // 
             // buttonBooks
             // 
@@ -114,6 +116,7 @@
             buttonBooks.TabIndex = 1;
             buttonBooks.Text = "Books";
             buttonBooks.UseVisualStyleBackColor = false;
+            buttonBooks.Click += buttonBooks_Click;
             // 
             // buttonDashboard
             // 
@@ -126,6 +129,7 @@
             buttonDashboard.TabIndex = 0;
             buttonDashboard.Text = "Dashboard";
             buttonDashboard.UseVisualStyleBackColor = false;
+            buttonDashboard.Click += buttonDashboard_Click;
             // 
             // DashboardForm
             // 

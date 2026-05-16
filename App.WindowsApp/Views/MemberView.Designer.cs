@@ -41,7 +41,7 @@
             textBoxSearch = new TextBox();
             dataGridViewMembers = new DataGridView();
             Id = new DataGridViewTextBoxColumn();
-            Name = new DataGridViewTextBoxColumn();
+            MemberName = new DataGridViewTextBoxColumn();
             Phone = new DataGridViewTextBoxColumn();
             Email = new DataGridViewTextBoxColumn();
             Address = new DataGridViewTextBoxColumn();
@@ -89,6 +89,7 @@
             toolStripButtonAdd.Size = new Size(49, 37);
             toolStripButtonAdd.Text = "Add";
             toolStripButtonAdd.ToolTipText = "toolStripButton";
+            toolStripButtonAdd.Click += toolStripButtonAdd_Click;
             // 
             // toolStripButtonEdit
             // 
@@ -98,6 +99,7 @@
             toolStripButtonEdit.Size = new Size(47, 37);
             toolStripButtonEdit.Text = "Edit";
             toolStripButtonEdit.ToolTipText = "toolStripButton";
+            toolStripButtonEdit.Click += toolStripButtonEdit_Click;
             // 
             // toolStripButtonView
             // 
@@ -106,6 +108,7 @@
             toolStripButtonView.Name = "toolStripButtonView";
             toolStripButtonView.Size = new Size(52, 37);
             toolStripButtonView.Text = "View";
+            toolStripButtonView.Click += toolStripButtonView_Click;
             // 
             // toolStripButtonDelete
             // 
@@ -114,6 +117,7 @@
             toolStripButtonDelete.Name = "toolStripButtonDelete";
             toolStripButtonDelete.Size = new Size(60, 37);
             toolStripButtonDelete.Text = "Delete";
+            toolStripButtonDelete.Click += toolStripButtonDelete_Click;
             // 
             // panelFilters
             // 
@@ -157,13 +161,14 @@
             textBoxSearch.Name = "textBoxSearch";
             textBoxSearch.Size = new Size(664, 23);
             textBoxSearch.TabIndex = 2;
+            textBoxSearch.TextChanged += textBoxSearch_TextChanged;
             // 
             // dataGridViewMembers
             // 
             dataGridViewMembers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewMembers.BackgroundColor = Color.White;
             dataGridViewMembers.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewMembers.Columns.AddRange(new DataGridViewColumn[] { Id, Name, Phone, Email, Address });
+            dataGridViewMembers.Columns.AddRange(new DataGridViewColumn[] { Id, MemberName, Phone, Email, Address });
             dataGridViewMembers.Dock = DockStyle.Fill;
             dataGridViewMembers.Location = new Point(3, 112);
             dataGridViewMembers.MultiSelect = false;
@@ -180,11 +185,11 @@
             Id.Name = "Id";
             Id.ReadOnly = true;
             // 
-            // Name
+            // MemberName
             // 
-            Name.HeaderText = "Name";
-            Name.Name = "Name";
-            Name.ReadOnly = true;
+            MemberName.HeaderText = "Name";
+            MemberName.Name = "Name";
+            MemberName.ReadOnly = true;
             // 
             // Phone
             // 
@@ -236,7 +241,7 @@
         private TextBox textBoxSearch;
         private DataGridView dataGridViewMembers;
         private DataGridViewTextBoxColumn Id;
-        private DataGridViewTextBoxColumn Name;
+        private DataGridViewTextBoxColumn MemberName;
         private DataGridViewTextBoxColumn Phone;
         private DataGridViewTextBoxColumn Email;
         private DataGridViewTextBoxColumn Address;

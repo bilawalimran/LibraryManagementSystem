@@ -7,7 +7,7 @@ namespace App.Core.Data
 {
     public static class DbHelper 
     {
-        private static readonly string connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=LibraryDB;Trusted_Connection=True;";
+        private static readonly string connectionString = @"Server=localhost;Database=LibraryDB;Trusted_Connection=True;TrustServerCertificate=True;";
         public static SqlConnection GetConnection()
         {
             return new SqlConnection(connectionString);

@@ -184,6 +184,7 @@
             buttonCancel.TabIndex = 0;
             buttonCancel.Text = "Cancel";
             buttonCancel.UseVisualStyleBackColor = true;
+            buttonCancel.Click += buttonCancel_Click;
             // 
             // buttonSave
             // 
@@ -193,6 +194,7 @@
             buttonSave.TabIndex = 1;
             buttonSave.Text = "Save";
             buttonSave.UseVisualStyleBackColor = true;
+            buttonSave.Click += buttonSave_Click;
             // 
             // panelBookDetails
             // 
@@ -238,12 +240,9 @@
         private Label labelEmail;
         private Label labelPhone;
         private Label labelAddress;
-        private Label labelPublishedDate;
         private Label labelId;
         private TextBox textBoxTitle;
         private TextBox textBoxAuthor;
-        private DateTimePicker dateTimePickerPublishedDate;
-        private TextBox textBoxBookId;
         private FlowLayoutPanel flowLayoutPanel;
         private Button buttonCancel;
         private Button buttonSave;
