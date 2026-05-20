@@ -4,7 +4,7 @@ using App.Core.Models;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 
-namespace LibraryManagementSystem.Core.Services
+namespace App.Core.Services
 {
     public class MemberService : IMemberService
     {

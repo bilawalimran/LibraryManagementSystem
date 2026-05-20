@@ -1,5 +1,4 @@
-using LibraryManagementSystem.Core.Services;
-using LibraryManagementSystem.Infrastructure.Services;
+using App.Core.Services;
 using System;
 using System.Linq;
 using System.Windows.Forms;

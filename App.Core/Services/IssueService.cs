@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 
-namespace LibraryManagementSystem.Infrastructure.Services
+namespace App.Core.Services
 {
     public class IssueService : IIssueService
     {

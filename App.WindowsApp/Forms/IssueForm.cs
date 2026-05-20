@@ -1,5 +1,5 @@
 using App.Core.Models;
-using LibraryManagementSystem.Core.Services;
+using App.Core.Services;
 using System;
 using System.Windows.Forms;
 
@@ -128,6 +128,11 @@ namespace App.WindowsApp.Forms
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void comboBoxBooks_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

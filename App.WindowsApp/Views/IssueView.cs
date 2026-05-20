@@ -1,9 +1,9 @@
 using App.Core.Models;
 using App.WindowsApp.Forms;
-using LibraryManagementSystem.Core.Services;
-using LibraryManagementSystem.Infrastructure.Services;
+using App.Core.Services;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -18,7 +18,45 @@ namespace App.WindowsApp.Views
         public IssueView()
         {
             InitializeComponent();
+            ApplyStyles();
             LoadIssues();
+        }
+
+        private void ApplyStyles()
+        {
+            Color accentColor = Color.Goldenrod;
+
+            BackColor = Color.White;
+            flowLayoutPanel.BackColor = Color.LemonChiffon;
+            flowLayoutPanel.Padding = new Padding(8);
+
+            toolStripIssues.BackColor = Color.WhiteSmoke;
+            toolStripIssues.GripStyle = ToolStripGripStyle.Hidden;
+            toolStripIssues.Padding = new Padding(6, 4, 6, 4);
+            toolStripIssues.RenderMode = ToolStripRenderMode.System;
+
+            foreach (ToolStripItem item in toolStripIssues.Items)
+            {
+                item.Margin = new Padding(2, 0, 2, 0);
+                item.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+            }
+
+            dataGridViewIssues.BackgroundColor = Color.White;
+            dataGridViewIssues.BorderStyle = BorderStyle.None;
+            dataGridViewIssues.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewIssues.GridColor = Color.Gainsboro;
+            dataGridViewIssues.EnableHeadersVisualStyles = false;
+            dataGridViewIssues.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewIssues.ColumnHeadersDefaultCellStyle.BackColor = accentColor;
+            dataGridViewIssues.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridViewIssues.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            dataGridViewIssues.ColumnHeadersDefaultCellStyle.SelectionBackColor = accentColor;
+            dataGridViewIssues.ColumnHeadersHeight = 34;
+            dataGridViewIssues.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+            dataGridViewIssues.DefaultCellStyle.SelectionBackColor = ControlPaint.Light(accentColor, 0.65F);
+            dataGridViewIssues.DefaultCellStyle.SelectionForeColor = Color.Black;
+            dataGridViewIssues.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(255, 250, 220);
+            dataGridViewIssues.RowTemplate.Height = 28;
         }
 
         private void LoadIssues()

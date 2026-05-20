@@ -1,9 +1,10 @@
 using App.Core.Enums;
 using App.Core.Models;
 using App.WindowsApp.Forms;
-using LibraryManagementSystem.Core.Services;
+using App.Core.Services;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -16,8 +17,46 @@ namespace App.WindowsApp.Views
         public BookView()
         {
             InitializeComponent();
+            ApplyStyles();
             LoadCategoryFilter();
             LoadBooks();
+        }
+
+        private void ApplyStyles()
+        {
+            Color accentColor = Color.RoyalBlue;
+
+            BackColor = Color.White;
+            panelFilters.BackColor = Color.AliceBlue;
+            panelFilters.Padding = new Padding(8);
+
+            toolStripBooks.BackColor = Color.WhiteSmoke;
+            toolStripBooks.GripStyle = ToolStripGripStyle.Hidden;
+            toolStripBooks.Padding = new Padding(6, 4, 6, 4);
+            toolStripBooks.RenderMode = ToolStripRenderMode.System;
+
+            foreach (ToolStripItem item in toolStripBooks.Items)
+            {
+                item.Margin = new Padding(2, 0, 2, 0);
+                item.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+            }
+
+            dataGridViewBooks.BackgroundColor = Color.White;
+            dataGridViewBooks.BorderStyle = BorderStyle.None;
+            dataGridViewBooks.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewBooks.GridColor = Color.Gainsboro;
+            dataGridViewBooks.EnableHeadersVisualStyles = false;
+            dataGridViewBooks.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewBooks.ColumnHeadersDefaultCellStyle.BackColor = accentColor;
+            dataGridViewBooks.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridViewBooks.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            dataGridViewBooks.ColumnHeadersDefaultCellStyle.SelectionBackColor = accentColor;
+            dataGridViewBooks.ColumnHeadersHeight = 34;
+            dataGridViewBooks.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+            dataGridViewBooks.DefaultCellStyle.SelectionBackColor = ControlPaint.Light(accentColor, 0.65F);
+            dataGridViewBooks.DefaultCellStyle.SelectionForeColor = Color.Black;
+            dataGridViewBooks.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(240, 247, 255);
+            dataGridViewBooks.RowTemplate.Height = 28;
         }
 
         private void LoadCategoryFilter()

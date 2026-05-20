@@ -193,6 +193,7 @@
             comboBoxBooks.Name = "comboBoxBooks";
             comboBoxBooks.Size = new Size(494, 23);
             comboBoxBooks.TabIndex = 12;
+            comboBoxBooks.SelectedIndexChanged += comboBoxBooks_SelectedIndexChanged;
             // 
             // comboBoxMembers
             // 
