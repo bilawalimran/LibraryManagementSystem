@@ -1,16 +1,29 @@
-﻿using App.Core.Data;
 using App.Core.Interfaces;
 using App.Core.Models;
 using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace App.Core.Services
 {
     public class MemberService : IMemberService
     {
+        private static SqlConnection GetConnection()
+        {
+            string? connectionString = ConfigurationManager.ConnectionStrings["LibraryDB"]?.ConnectionString;
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException("Connection string 'LibraryDB' was not found in App.config.");
+            }
+
+            return new SqlConnection(connectionString);
+        }
+
         public void AddMember(Member member)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = @"INSERT INTO Members
@@ -30,7 +43,7 @@ namespace App.Core.Services
 
         public void UpdateMember(Member member)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = @"UPDATE Members
@@ -53,7 +66,7 @@ namespace App.Core.Services
 
         public void DeleteMember(int id)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = "DELETE FROM Members WHERE Id=@Id";
@@ -68,7 +81,7 @@ namespace App.Core.Services
         {
             var members = new List<Member>();
 
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = "SELECT * FROM Members";
@@ -93,7 +106,7 @@ namespace App.Core.Services
 
         public Member GetMemberById(int id)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = "SELECT * FROM Members WHERE Id=@Id";

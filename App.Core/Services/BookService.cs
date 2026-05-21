@@ -1,18 +1,30 @@
-﻿using App.Core.Data;
 using App.Core.Enums;
 using App.Core.Interfaces;
 using App.Core.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace App.Core.Services
 {
     public class BookService : IBookService
     {
+        private static SqlConnection GetConnection()
+        {
+            string? connectionString = ConfigurationManager.ConnectionStrings["LibraryDB"]?.ConnectionString;
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException("Connection string 'LibraryDB' was not found in App.config.");
+            }
+
+            return new SqlConnection(connectionString);
+        }
+
         public void AddBook(Book book)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = @"INSERT INTO Books
@@ -33,7 +45,7 @@ namespace App.Core.Services
 
         public void UpdateBook(Book book)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = @"UPDATE Books
@@ -58,7 +70,7 @@ namespace App.Core.Services
 
         public void DeleteBook(int id)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = "DELETE FROM Books WHERE Id=@Id";
@@ -73,7 +85,7 @@ namespace App.Core.Services
         {
             var books = new List<Book>();
 
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = "SELECT * FROM Books";
@@ -100,7 +112,7 @@ namespace App.Core.Services
 
         public Book GetBookById(int id)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = "SELECT * FROM Books WHERE Id=@Id";
@@ -131,7 +143,7 @@ namespace App.Core.Services
         {
             var books = new List<Book>();
 
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = $"SELECT * FROM Books WHERE {filterType} LIKE @Keyword";

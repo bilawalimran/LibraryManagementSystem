@@ -1,17 +1,29 @@
-﻿using App.Core.Data;
 using App.Core.Interfaces;
 using App.Core.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace App.Core.Services
 {
     public class IssueService : IIssueService
     {
+        private static SqlConnection GetConnection()
+        {
+            string? connectionString = ConfigurationManager.ConnectionStrings["LibraryDB"]?.ConnectionString;
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException("Connection string 'LibraryDB' was not found in App.config.");
+            }
+
+            return new SqlConnection(connectionString);
+        }
+
         public void IssueBook(IssueRecord issue)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = @"INSERT INTO Issues(BookId, MemberId, IssueDate, ReturnDate)
@@ -36,7 +48,7 @@ namespace App.Core.Services
 
         public void ReturnBook(int issueId, DateTime returnDate)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = "UPDATE Issues SET ReturnDate=@ReturnDate WHERE Id=@Id";
@@ -51,7 +63,7 @@ namespace App.Core.Services
 
         public void DeleteIssue(int issueId)
         {
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = "DELETE FROM Issues WHERE Id=@Id";
@@ -66,7 +78,7 @@ namespace App.Core.Services
         {
             var issues = new List<IssueRecord>();
 
-            using var conn = DbHelper.GetConnection();
+            using var conn = GetConnection();
             conn.Open();
 
             string query = "SELECT * FROM Issues";
