@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
 
 namespace App.Core.Models
 {
-    public class IssueRecord 
-    { 
-        public int Id { get; set; }
-        public int BookId { get; set; }
-        public int MemberId { get; set; }
-        public DateTime IssueDate { get; set; }
+    public class IssueRecord
+    {
+        public IssueRecord()
+        {
+            Id = "I-" + Guid.NewGuid().ToString("N").Substring(0, 9);
+        }
+
+        public string Id { get; set; }
+        public string BookId { get; set; } = string.Empty;
+        public string MemberId { get; set; } = string.Empty;
+        public DateTime IssueDate { get; set; } = DateTime.Today;
         public DateTime? ReturnDate { get; set; }
     }
 }

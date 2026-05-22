@@ -91,14 +91,14 @@ namespace App.WindowsApp.Views
             }
         }
 
-        private int? GetSelectedMemberId()
+        private string? GetSelectedMemberId()
         {
             if (dataGridViewMembers.CurrentRow == null)
             {
                 return null;
             }
 
-            return Convert.ToInt32(dataGridViewMembers.CurrentRow.Cells["Id"].Value);
+            return dataGridViewMembers.CurrentRow.Cells["Id"].Value?.ToString();
         }
 
         private void toolStripButtonAdd_Click(object sender, EventArgs e)
@@ -114,15 +114,23 @@ namespace App.WindowsApp.Views
 
         private void toolStripButtonEdit_Click(object sender, EventArgs e)
         {
-            int? memberId = GetSelectedMemberId();
+            string? memberId = GetSelectedMemberId();
 
-            if (!memberId.HasValue)
+            if (string.IsNullOrWhiteSpace(memberId))
             {
                 MessageBox.Show("Please select a member to edit.", "Edit Member", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            Member member = memberService.GetMemberById(memberId.Value);
+            Member? member = memberService.GetMemberById(memberId);
+
+            if (member == null)
+            {
+                MessageBox.Show("Selected member was not found.", "Edit Member", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                LoadMembers();
+                return;
+            }
+
             using MemberForm form = new MemberForm(member);
 
             if (form.ShowDialog() == DialogResult.OK && form.Member != null)
@@ -134,24 +142,32 @@ namespace App.WindowsApp.Views
 
         private void toolStripButtonView_Click(object sender, EventArgs e)
         {
-            int? memberId = GetSelectedMemberId();
+            string? memberId = GetSelectedMemberId();
 
-            if (!memberId.HasValue)
+            if (string.IsNullOrWhiteSpace(memberId))
             {
                 MessageBox.Show("Please select a member to view.", "View Member", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            Member member = memberService.GetMemberById(memberId.Value);
+            Member? member = memberService.GetMemberById(memberId);
+
+            if (member == null)
+            {
+                MessageBox.Show("Selected member was not found.", "View Member", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                LoadMembers();
+                return;
+            }
+
             using MemberForm form = new MemberForm(member, true);
             form.ShowDialog();
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)
         {
-            int? memberId = GetSelectedMemberId();
+            string? memberId = GetSelectedMemberId();
 
-            if (!memberId.HasValue)
+            if (string.IsNullOrWhiteSpace(memberId))
             {
                 MessageBox.Show("Please select a member to delete.", "Delete Member", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -165,7 +181,7 @@ namespace App.WindowsApp.Views
 
             if (result == DialogResult.Yes)
             {
-                memberService.DeleteMember(memberId.Value);
+                memberService.DeleteMember(memberId);
                 LoadMembers();
             }
         }

@@ -24,6 +24,10 @@ namespace App.WindowsApp.Forms
             {
                 LoadMember(member);
             }
+            else
+            {
+                textBoxMemberId.Text = new Member().Id;
+            }
 
             ApplyReadOnlyMode();
         }
@@ -58,7 +62,9 @@ namespace App.WindowsApp.Forms
 
             Member = new Member
             {
-                Id = int.TryParse(textBoxMemberId.Text, out int id) ? id : 0,
+                Id = string.IsNullOrWhiteSpace(textBoxMemberId.Text)
+                    ? new Member().Id
+                    : textBoxMemberId.Text.Trim(),
                 Name = textBoxTitle.Text.Trim(),
                 Email = textBoxAuthor.Text.Trim(),
                 Phone = textBoxPhone.Text.Trim(),

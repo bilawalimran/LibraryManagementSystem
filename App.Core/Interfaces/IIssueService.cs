@@ -8,9 +8,9 @@ namespace App.Core.Interfaces
     public interface IIssueService 
     {
         void IssueBook(IssueRecord issue);
-        void ReturnBook(int issueId);
-        void ReturnBook(int issueId, DateTime returnDate);
-        void DeleteIssue(int issueId);
+        void ReturnBook(string issueId);
+        void ReturnBook(string issueId, DateTime returnDate);
+        void DeleteIssue(string issueId);
         List<IssueRecord> GetAllIssues();
 
     }

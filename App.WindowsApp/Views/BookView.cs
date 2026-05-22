@@ -112,14 +112,14 @@ namespace App.WindowsApp.Views
             }
         }
 
-        private int? GetSelectedBookId()
+        private string? GetSelectedBookId()
         {
             if (dataGridViewBooks.CurrentRow == null)
             {
                 return null;
             }
 
-            return Convert.ToInt32(dataGridViewBooks.CurrentRow.Cells["Id"].Value);
+            return dataGridViewBooks.CurrentRow.Cells["Id"].Value?.ToString();
         }
 
         private void toolStripButtonAdd_Click(object sender, EventArgs e)
@@ -135,15 +135,23 @@ namespace App.WindowsApp.Views
 
         private void toolStripButtonEdit_Click(object sender, EventArgs e)
         {
-            int? bookId = GetSelectedBookId();
+            string? bookId = GetSelectedBookId();
 
-            if (!bookId.HasValue)
+            if (string.IsNullOrWhiteSpace(bookId))
             {
                 MessageBox.Show("Please select a book to edit.", "Edit Book", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            Book book = bookService.GetBookById(bookId.Value);
+            Book? book = bookService.GetBookById(bookId);
+
+            if (book == null)
+            {
+                MessageBox.Show("Selected book was not found.", "Edit Book", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                LoadBooks();
+                return;
+            }
+
             using BookForm form = new BookForm(book);
 
             if (form.ShowDialog() == DialogResult.OK && form.Book != null)
@@ -155,24 +163,32 @@ namespace App.WindowsApp.Views
 
         private void toolStripButtonView_Click(object sender, EventArgs e)
         {
-            int? bookId = GetSelectedBookId();
+            string? bookId = GetSelectedBookId();
 
-            if (!bookId.HasValue)
+            if (string.IsNullOrWhiteSpace(bookId))
             {
                 MessageBox.Show("Please select a book to view.", "View Book", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            Book book = bookService.GetBookById(bookId.Value);
+            Book? book = bookService.GetBookById(bookId);
+
+            if (book == null)
+            {
+                MessageBox.Show("Selected book was not found.", "View Book", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                LoadBooks();
+                return;
+            }
+
             using BookForm form = new BookForm(book, true);
             form.ShowDialog();
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)
         {
-            int? bookId = GetSelectedBookId();
+            string? bookId = GetSelectedBookId();
 
-            if (!bookId.HasValue)
+            if (string.IsNullOrWhiteSpace(bookId))
             {
                 MessageBox.Show("Please select a book to delete.", "Delete Book", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -186,7 +202,7 @@ namespace App.WindowsApp.Views
 
             if (result == DialogResult.Yes)
             {
-                bookService.DeleteBook(bookId.Value);
+                bookService.DeleteBook(bookId);
                 LoadBooks();
             }
         }

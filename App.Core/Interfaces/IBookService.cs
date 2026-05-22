@@ -9,8 +9,8 @@ namespace App.Core.Interfaces
     { 
         void AddBook(Book book);
         void UpdateBook(Book book);
-        void DeleteBook(int id);
+        void DeleteBook(string id);
         List<Book> GetAllBooks();
-        Book GetBookById(int id);
+        Book? GetBookById(string id);
     }
 }

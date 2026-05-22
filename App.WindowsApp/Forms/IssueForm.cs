@@ -30,6 +30,7 @@ namespace App.WindowsApp.Forms
             }
             else
             {
+                textBoxId.Text = new IssueRecord().Id;
                 dateTimePickerIssueDate.Value = DateTime.Now;
                 checkBoxReturned.Checked = false;
             }
@@ -113,9 +114,11 @@ namespace App.WindowsApp.Forms
 
             Issue = new IssueRecord
             {
-                Id = int.TryParse(textBoxId.Text, out int id) ? id : 0,
-                BookId = Convert.ToInt32(comboBoxBooks.SelectedValue),
-                MemberId = Convert.ToInt32(comboBoxMembers.SelectedValue),
+                Id = string.IsNullOrWhiteSpace(textBoxId.Text)
+                    ? new IssueRecord().Id
+                    : textBoxId.Text.Trim(),
+                BookId = comboBoxBooks.SelectedValue.ToString() ?? string.Empty,
+                MemberId = comboBoxMembers.SelectedValue.ToString() ?? string.Empty,
                 IssueDate = dateTimePickerIssueDate.Value,
                 ReturnDate = returnDate
             };

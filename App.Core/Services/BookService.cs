@@ -28,12 +28,13 @@ namespace App.Core.Services
             conn.Open();
 
             string query = @"INSERT INTO Books
-                            (Title, Author, Category, PublishedDate, Quantity)
+                            (Id, Title, Author, Category, PublishedDate, Quantity)
                             VALUES
-                            (@Title, @Author, @Category, @PublishedDate, @Quantity)";
+                            (@Id, @Title, @Author, @Category, @PublishedDate, @Quantity)";
 
             using var cmd = new SqlCommand(query, conn);
 
+            cmd.Parameters.AddWithValue("@Id", book.Id);
             cmd.Parameters.AddWithValue("@Title", book.Title);
             cmd.Parameters.AddWithValue("@Author", book.Author);
             cmd.Parameters.AddWithValue("@Category", book.Category.ToString());
@@ -68,7 +69,7 @@ namespace App.Core.Services
             cmd.ExecuteNonQuery();
         }
 
-        public void DeleteBook(int id)
+        public void DeleteBook(string id)
         {
             using var conn = GetConnection();
             conn.Open();
@@ -95,22 +96,13 @@ namespace App.Core.Services
 
             while (reader.Read())
             {
-                books.Add(new Book
-                {
-                    Id = (int)reader["Id"],
-                    Title = reader["Title"].ToString(),
-                    Author = reader["Author"].ToString(),
-                    Category = Enum.Parse<BookCategory>(
-                        reader["Category"].ToString()),
-                    PublishedDate = (DateTime)reader["PublishedDate"],
-                    Quantity = (int)reader["Quantity"]
-                });
+                books.Add(ReadBook(reader));
             }
 
             return books;
         }
 
-        public Book GetBookById(int id)
+        public Book? GetBookById(string id)
         {
             using var conn = GetConnection();
             conn.Open();
@@ -124,16 +116,7 @@ namespace App.Core.Services
 
             if (reader.Read())
             {
-                return new Book
-                {
-                    Id = (int)reader["Id"],
-                    Title = reader["Title"].ToString(),
-                    Author = reader["Author"].ToString(),
-                    Category = Enum.Parse<BookCategory>(
-                        reader["Category"].ToString()),
-                    PublishedDate = (DateTime)reader["PublishedDate"],
-                    Quantity = (int)reader["Quantity"]
-                };
+                return ReadBook(reader);
             }
 
             return null;
@@ -155,19 +138,24 @@ namespace App.Core.Services
 
             while (reader.Read())
             {
-                books.Add(new Book
-                {
-                    Id = (int)reader["Id"],
-                    Title = reader["Title"].ToString(),
-                    Author = reader["Author"].ToString(),
-                    Category = Enum.Parse<BookCategory>(
-                        reader["Category"].ToString()),
-                    PublishedDate = (DateTime)reader["PublishedDate"],
-                    Quantity = (int)reader["Quantity"]
-                });
+                books.Add(ReadBook(reader));
             }
 
             return books;
+        }
+
+        private static Book ReadBook(SqlDataReader reader)
+        {
+            return new Book
+            {
+                Id = reader["Id"].ToString() ?? string.Empty,
+                Title = reader["Title"].ToString() ?? string.Empty,
+                Author = reader["Author"].ToString() ?? string.Empty,
+                Category = Enum.Parse<BookCategory>(
+                    reader["Category"].ToString() ?? nameof(BookCategory.Science)),
+                PublishedDate = (DateTime)reader["PublishedDate"],
+                Quantity = (int)reader["Quantity"]
+            };
         }
     }
 }

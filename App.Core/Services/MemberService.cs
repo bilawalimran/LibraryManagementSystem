@@ -27,12 +27,13 @@ namespace App.Core.Services
             conn.Open();
 
             string query = @"INSERT INTO Members
-                            (Name, Email, Phone, Address)
+                            (Id, Name, Email, Phone, Address)
                             VALUES
-                            (@Name, @Email, @Phone, @Address)";
+                            (@Id, @Name, @Email, @Phone, @Address)";
 
             using var cmd = new SqlCommand(query, conn);
 
+            cmd.Parameters.AddWithValue("@Id", member.Id);
             cmd.Parameters.AddWithValue("@Name", member.Name);
             cmd.Parameters.AddWithValue("@Email", member.Email);
             cmd.Parameters.AddWithValue("@Phone", member.Phone);
@@ -64,7 +65,7 @@ namespace App.Core.Services
             cmd.ExecuteNonQuery();
         }
 
-        public void DeleteMember(int id)
+        public void DeleteMember(string id)
         {
             using var conn = GetConnection();
             conn.Open();
@@ -91,20 +92,13 @@ namespace App.Core.Services
 
             while (reader.Read())
             {
-                members.Add(new Member
-                {
-                    Id = (int)reader["Id"],
-                    Name = reader["Name"].ToString(),
-                    Email = reader["Email"].ToString(),
-                    Phone = reader["Phone"].ToString(),
-                    Address = reader["Address"].ToString()
-                });
+                members.Add(ReadMember(reader));
             }
 
             return members;
         }
 
-        public Member GetMemberById(int id)
+        public Member? GetMemberById(string id)
         {
             using var conn = GetConnection();
             conn.Open();
@@ -118,17 +112,22 @@ namespace App.Core.Services
 
             if (reader.Read())
             {
-                return new Member
-                {
-                    Id = (int)reader["Id"],
-                    Name = reader["Name"].ToString(),
-                    Email = reader["Email"].ToString(),
-                    Phone = reader["Phone"].ToString(),
-                    Address = reader["Address"].ToString()
-                };
+                return ReadMember(reader);
             }
 
             return null;
+        }
+
+        private static Member ReadMember(SqlDataReader reader)
+        {
+            return new Member
+            {
+                Id = reader["Id"].ToString() ?? string.Empty,
+                Name = reader["Name"].ToString() ?? string.Empty,
+                Email = reader["Email"].ToString() ?? string.Empty,
+                Phone = reader["Phone"].ToString() ?? string.Empty,
+                Address = reader["Address"].ToString() ?? string.Empty
+            };
         }
     }
 }

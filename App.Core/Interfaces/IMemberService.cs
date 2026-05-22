@@ -9,7 +9,7 @@ namespace App.Core.Interfaces
     {
         void AddMember(Member member);
         void UpdateMember(Member member);
-        void DeleteMember(int id);
+        void DeleteMember(string id);
         List<Member> GetAllMembers();
 
     }

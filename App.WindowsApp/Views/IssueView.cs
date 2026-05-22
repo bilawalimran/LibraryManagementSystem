@@ -72,8 +72,8 @@ namespace App.WindowsApp.Views
                 {
                     issues = issues.Where(issue =>
                         issue.Id.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        issue.BookId.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        issue.MemberId.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                        issue.BookId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                        issue.MemberId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
                         GetBookName(books, issue.BookId).Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
                         GetMemberName(members, issue.MemberId).Contains(keyword, StringComparison.OrdinalIgnoreCase));
                 }
@@ -96,36 +96,36 @@ namespace App.WindowsApp.Views
             }
         }
 
-        private static string GetBookName(Dictionary<int, string> books, int bookId)
+        private static string GetBookName(Dictionary<string, string> books, string bookId)
         {
             return books.TryGetValue(bookId, out string? title) ? title : $"Book #{bookId}";
         }
 
-        private static string GetMemberName(Dictionary<int, string> members, int memberId)
+        private static string GetMemberName(Dictionary<string, string> members, string memberId)
         {
             return members.TryGetValue(memberId, out string? name) ? name : $"Member #{memberId}";
         }
 
-        private int? GetSelectedIssueId()
+        private string? GetSelectedIssueId()
         {
             if (dataGridViewIssues.CurrentRow == null)
             {
                 return null;
             }
 
-            return Convert.ToInt32(dataGridViewIssues.CurrentRow.Cells["Id"].Value);
+            return dataGridViewIssues.CurrentRow.Cells["Id"].Value?.ToString();
         }
 
         private IssueRecord? GetSelectedIssue()
         {
-            int? issueId = GetSelectedIssueId();
+            string? issueId = GetSelectedIssueId();
 
-            if (!issueId.HasValue)
+            if (string.IsNullOrWhiteSpace(issueId))
             {
                 return null;
             }
 
-            return issueService.GetAllIssues().FirstOrDefault(issue => issue.Id == issueId.Value);
+            return issueService.GetAllIssues().FirstOrDefault(issue => issue.Id == issueId);
         }
 
         private void toolStripButtonIssue_Click(object sender, EventArgs e)
@@ -174,9 +174,9 @@ namespace App.WindowsApp.Views
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)
         {
-            int? issueId = GetSelectedIssueId();
+            string? issueId = GetSelectedIssueId();
 
-            if (!issueId.HasValue)
+            if (string.IsNullOrWhiteSpace(issueId))
             {
                 MessageBox.Show("Please select an issue record to delete.", "Delete Issue", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -190,7 +190,7 @@ namespace App.WindowsApp.Views
 
             if (result == DialogResult.Yes)
             {
-                issueService.DeleteIssue(issueId.Value);
+                issueService.DeleteIssue(issueId);
                 LoadIssues();
             }
         }

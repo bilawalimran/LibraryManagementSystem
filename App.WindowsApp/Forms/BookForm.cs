@@ -26,6 +26,11 @@ namespace App.WindowsApp.Forms
             {
                 LoadBook(book);
             }
+            else
+            {
+                textBoxBookId.Text = new Book().Id;
+                dateTimePickerPublishedDate.Value = DateTime.Today;
+            }
 
             ApplyReadOnlyMode();
         }
@@ -82,7 +87,9 @@ namespace App.WindowsApp.Forms
 
             Book = new Book
             {
-                Id = int.TryParse(textBoxBookId.Text, out int id) ? id : 0,
+                Id = string.IsNullOrWhiteSpace(textBoxBookId.Text)
+                    ? new Book().Id
+                    : textBoxBookId.Text.Trim(),
                 Title = textBoxTitle.Text.Trim(),
                 Author = textBoxAuthor.Text.Trim(),
                 Category = selectedCategory,

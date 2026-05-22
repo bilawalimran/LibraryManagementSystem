@@ -26,11 +26,12 @@ namespace App.Core.Services
             using var conn = GetConnection();
             conn.Open();
 
-            string query = @"INSERT INTO Issues(BookId, MemberId, IssueDate, ReturnDate)
-                             VALUES(@BookId, @MemberId, @IssueDate, @ReturnDate)";
+            string query = @"INSERT INTO Issues(Id, BookId, MemberId, IssueDate, ReturnDate)
+                             VALUES(@Id, @BookId, @MemberId, @IssueDate, @ReturnDate)";
 
             using var cmd = new SqlCommand(query, conn);
 
+            cmd.Parameters.AddWithValue("@Id", issue.Id);
             cmd.Parameters.AddWithValue("@BookId", issue.BookId);
             cmd.Parameters.AddWithValue("@MemberId", issue.MemberId);
             cmd.Parameters.AddWithValue("@IssueDate", issue.IssueDate == default ? DateTime.Now : issue.IssueDate);
@@ -41,12 +42,12 @@ namespace App.Core.Services
             cmd.ExecuteNonQuery();
         }
 
-        public void ReturnBook(int issueId)
+        public void ReturnBook(string issueId)
         {
             ReturnBook(issueId, DateTime.Now);
         }
 
-        public void ReturnBook(int issueId, DateTime returnDate)
+        public void ReturnBook(string issueId, DateTime returnDate)
         {
             using var conn = GetConnection();
             conn.Open();
@@ -61,7 +62,7 @@ namespace App.Core.Services
             cmd.ExecuteNonQuery();
         }
 
-        public void DeleteIssue(int issueId)
+        public void DeleteIssue(string issueId)
         {
             using var conn = GetConnection();
             conn.Open();
@@ -90,9 +91,9 @@ namespace App.Core.Services
             {
                 issues.Add(new IssueRecord
                 {
-                    Id = (int)reader["Id"],
-                    BookId = (int)reader["BookId"],
-                    MemberId = (int)reader["MemberId"],
+                    Id = reader["Id"].ToString() ?? string.Empty,
+                    BookId = reader["BookId"].ToString() ?? string.Empty,
+                    MemberId = reader["MemberId"].ToString() ?? string.Empty,
                     IssueDate = (DateTime)reader["IssueDate"],
                     ReturnDate = reader["ReturnDate"] == DBNull.Value
                         ? null
