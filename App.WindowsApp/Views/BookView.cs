@@ -216,5 +216,10 @@ namespace App.WindowsApp.Views
         {
             LoadBooks();
         }
+
+        private void toolStripButtonRefresh_Click(object sender, EventArgs e)
+        {
+            LoadBooks();
+        }
     }
 }

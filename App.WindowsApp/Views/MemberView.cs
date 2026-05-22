@@ -190,5 +190,10 @@ namespace App.WindowsApp.Views
         {
             LoadMembers();
         }
+
+        private void toolStripButtonRefresh_Click(object sender, EventArgs e)
+        {
+            LoadMembers();
+        }
     }
 }

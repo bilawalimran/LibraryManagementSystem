@@ -44,6 +44,8 @@
             Phone = new DataGridViewTextBoxColumn();
             Email = new DataGridViewTextBoxColumn();
             Address = new DataGridViewTextBoxColumn();
+            toolStripSeparator = new ToolStripSeparator();
+            toolStripButtonRefresh = new ToolStripButton();
             tableLayoutPanel.SuspendLayout();
             toolStripMembers.SuspendLayout();
             panelFilters.SuspendLayout();
@@ -73,7 +75,7 @@
             // 
             toolStripMembers.BackColor = Color.WhiteSmoke;
             toolStripMembers.Dock = DockStyle.Fill;
-            toolStripMembers.Items.AddRange(new ToolStripItem[] { toolStripButtonAdd, toolStripButtonEdit, toolStripButtonView, toolStripButtonDelete });
+            toolStripMembers.Items.AddRange(new ToolStripItem[] { toolStripButtonAdd, toolStripButtonEdit, toolStripButtonView, toolStripButtonDelete, toolStripSeparator, toolStripButtonRefresh });
             toolStripMembers.Location = new Point(0, 0);
             toolStripMembers.Name = "toolStripMembers";
             toolStripMembers.Size = new Size(676, 40);
@@ -87,7 +89,7 @@
             toolStripButtonAdd.Name = "toolStripButtonAdd";
             toolStripButtonAdd.Size = new Size(49, 37);
             toolStripButtonAdd.Text = "Add";
-            toolStripButtonAdd.ToolTipText = "toolStripButton";
+            toolStripButtonAdd.ToolTipText = "Add";
             toolStripButtonAdd.Click += toolStripButtonAdd_Click;
             // 
             // toolStripButtonEdit
@@ -97,7 +99,7 @@
             toolStripButtonEdit.Name = "toolStripButtonEdit";
             toolStripButtonEdit.Size = new Size(47, 37);
             toolStripButtonEdit.Text = "Edit";
-            toolStripButtonEdit.ToolTipText = "toolStripButton";
+            toolStripButtonEdit.ToolTipText = "Edit";
             toolStripButtonEdit.Click += toolStripButtonEdit_Click;
             // 
             // toolStripButtonView
@@ -208,6 +210,21 @@
             Address.Name = "Address";
             Address.ReadOnly = true;
             // 
+            // toolStripSeparator
+            // 
+            toolStripSeparator.Name = "toolStripSeparator";
+            toolStripSeparator.Size = new Size(6, 40);
+            // 
+            // toolStripButtonRefresh
+            // 
+            toolStripButtonRefresh.Image = Properties.Resources.refresh;
+            toolStripButtonRefresh.ImageTransparentColor = Color.Magenta;
+            toolStripButtonRefresh.Name = "toolStripButtonRefresh";
+            toolStripButtonRefresh.Size = new Size(66, 37);
+            toolStripButtonRefresh.Text = "Refresh";
+            toolStripButtonRefresh.ToolTipText = "Refresh";
+            toolStripButtonRefresh.Click += toolStripButtonRefresh_Click;
+            // 
             // MemberView
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -244,5 +261,7 @@
         private DataGridViewTextBoxColumn Phone;
         private DataGridViewTextBoxColumn Email;
         private DataGridViewTextBoxColumn Address;
+        private ToolStripSeparator toolStripSeparator;
+        private ToolStripButton toolStripButtonRefresh;
     }
 }

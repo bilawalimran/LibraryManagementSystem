@@ -34,6 +34,8 @@
             toolStripButtonEdit = new ToolStripButton();
             toolStripButtonView = new ToolStripButton();
             toolStripButtonDelete = new ToolStripButton();
+            toolStripSeparator = new ToolStripSeparator();
+            toolStripButtonRefresh = new ToolStripButton();
             panelFilters = new Panel();
             tableLayoutPanelFilters = new TableLayoutPanel();
             labelSearch = new Label();
@@ -76,7 +78,7 @@
             // 
             toolStripBooks.BackColor = Color.WhiteSmoke;
             toolStripBooks.Dock = DockStyle.Fill;
-            toolStripBooks.Items.AddRange(new ToolStripItem[] { toolStripButtonAdd, toolStripButtonEdit, toolStripButtonView, toolStripButtonDelete });
+            toolStripBooks.Items.AddRange(new ToolStripItem[] { toolStripButtonAdd, toolStripButtonEdit, toolStripButtonView, toolStripButtonDelete, toolStripSeparator, toolStripButtonRefresh });
             toolStripBooks.Location = new Point(0, 0);
             toolStripBooks.Name = "toolStripBooks";
             toolStripBooks.Size = new Size(674, 40);
@@ -90,7 +92,7 @@
             toolStripButtonAdd.Name = "toolStripButtonAdd";
             toolStripButtonAdd.Size = new Size(49, 37);
             toolStripButtonAdd.Text = "Add";
-            toolStripButtonAdd.ToolTipText = "toolStripButton";
+            toolStripButtonAdd.ToolTipText = "Add";
             toolStripButtonAdd.Click += toolStripButtonAdd_Click;
             // 
             // toolStripButtonEdit
@@ -100,7 +102,7 @@
             toolStripButtonEdit.Name = "toolStripButtonEdit";
             toolStripButtonEdit.Size = new Size(47, 37);
             toolStripButtonEdit.Text = "Edit";
-            toolStripButtonEdit.ToolTipText = "toolStripButton";
+            toolStripButtonEdit.ToolTipText = "Edit";
             toolStripButtonEdit.Click += toolStripButtonEdit_Click;
             // 
             // toolStripButtonView
@@ -120,6 +122,21 @@
             toolStripButtonDelete.Size = new Size(60, 37);
             toolStripButtonDelete.Text = "Delete";
             toolStripButtonDelete.Click += toolStripButtonDelete_Click;
+            // 
+            // toolStripSeparator
+            // 
+            toolStripSeparator.Name = "toolStripSeparator";
+            toolStripSeparator.Size = new Size(6, 40);
+            // 
+            // toolStripButtonRefresh
+            // 
+            toolStripButtonRefresh.Image = Properties.Resources.refresh;
+            toolStripButtonRefresh.ImageTransparentColor = Color.Magenta;
+            toolStripButtonRefresh.Name = "toolStripButtonRefresh";
+            toolStripButtonRefresh.Size = new Size(66, 37);
+            toolStripButtonRefresh.Text = "Refresh";
+            toolStripButtonRefresh.ToolTipText = "Refresh";
+            toolStripButtonRefresh.Click += toolStripButtonRefresh_Click;
             // 
             // panelFilters
             // 
@@ -278,5 +295,7 @@
         private DataGridViewTextBoxColumn Category;
         private DataGridViewTextBoxColumn Quantity;
         private DataGridViewTextBoxColumn PublishedDate;
+        private ToolStripSeparator toolStripSeparator;
+        private ToolStripButton toolStripButtonRefresh;
     }
 }
