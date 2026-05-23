@@ -48,5 +48,10 @@ namespace App.WindowsApp.Forms
         {
             ShowView(new ReservationView());
         }
+
+        private void pictureBoxLogo_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
