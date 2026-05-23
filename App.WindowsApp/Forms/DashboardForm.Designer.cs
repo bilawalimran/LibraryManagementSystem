@@ -32,6 +32,7 @@
             labelHeader = new Label();
             panelContent = new Panel();
             panelNavigation = new Panel();
+            buttonReservations = new Button();
             buttonIssueReturn = new Button();
             buttonMembers = new Button();
             buttonBooks = new Button();
@@ -69,6 +70,7 @@
             // 
             // panelNavigation
             // 
+            panelNavigation.Controls.Add(buttonReservations);
             panelNavigation.Controls.Add(buttonIssueReturn);
             panelNavigation.Controls.Add(buttonMembers);
             panelNavigation.Controls.Add(buttonBooks);
@@ -78,6 +80,19 @@
             panelNavigation.Name = "panelNavigation";
             panelNavigation.Size = new Size(118, 400);
             panelNavigation.TabIndex = 1;
+            // 
+            // buttonReservations
+            // 
+            buttonReservations.BackColor = Color.Blue;
+            buttonReservations.FlatStyle = FlatStyle.Flat;
+            buttonReservations.ForeColor = SystemColors.Control;
+            buttonReservations.Location = new Point(6, 166);
+            buttonReservations.Name = "buttonReservations";
+            buttonReservations.Size = new Size(106, 34);
+            buttonReservations.TabIndex = 2;
+            buttonReservations.Text = "Reservations";
+            buttonReservations.UseVisualStyleBackColor = false;
+            buttonReservations.Click += buttonReservations_Click;
             // 
             // buttonIssueReturn
             // 
@@ -161,5 +176,6 @@
         private Button buttonIssueReturn;
         private Button buttonMembers;
         private Button buttonBooks;
+        private Button buttonReservations;
     }
 }

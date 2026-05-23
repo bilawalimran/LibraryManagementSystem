@@ -10,6 +10,7 @@ namespace App.WindowsApp.Views
         private readonly BookService bookService = new BookService();
         private readonly MemberService memberService = new MemberService();
         private readonly IssueService issueService = new IssueService();
+        private readonly ReservationService reservationService = new ReservationService();
 
         public DashboardView()
         {
@@ -29,11 +30,13 @@ namespace App.WindowsApp.Views
                 var books = bookService.GetAllBooks();
                 var members = memberService.GetAllMembers();
                 var issues = issueService.GetAllIssues();
+                var reservations = reservationService.GetAllReservations();
 
                 labelBooksCount.Text = books.Count.ToString();
                 labelMembersCount.Text = members.Count.ToString();
                 labelActiveIssuesCount.Text = issues.Count(issue => !issue.ReturnDate.HasValue).ToString();
                 labelReturnedCount.Text = issues.Count(issue => issue.ReturnDate.HasValue).ToString();
+                labelReservationsCount.Text = reservations.Count.ToString();
                 labelStatus.Text = $"Last updated {DateTime.Now:g}";
             }
             catch (Exception)
@@ -42,6 +45,7 @@ namespace App.WindowsApp.Views
                 labelMembersCount.Text = "N/A";
                 labelActiveIssuesCount.Text = "N/A";
                 labelReturnedCount.Text = "N/A";
+                labelReservationsCount.Text = "N/A";
                 labelStatus.Text = "Unable to load dashboard data.";
             }
         }

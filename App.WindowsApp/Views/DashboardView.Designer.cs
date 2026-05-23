@@ -46,6 +46,9 @@ namespace App.WindowsApp.Views
             panelReturned = new Panel();
             labelReturnedCount = new Label();
             labelReturnedTitle = new Label();
+            panelReservations = new Panel();
+            labelReservationsCount = new Label();
+            labelReservationsTitle = new Label();
             panelFooter = new Panel();
             labelFooter = new Label();
             tableLayoutPanelMain.SuspendLayout();
@@ -55,6 +58,7 @@ namespace App.WindowsApp.Views
             panelMembers.SuspendLayout();
             panelActiveIssues.SuspendLayout();
             panelReturned.SuspendLayout();
+            panelReservations.SuspendLayout();
             panelFooter.SuspendLayout();
             SuspendLayout();
             // 
@@ -125,15 +129,17 @@ namespace App.WindowsApp.Views
             // 
             // tableLayoutPanelStats
             // 
-            tableLayoutPanelStats.ColumnCount = 4;
-            tableLayoutPanelStats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            tableLayoutPanelStats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            tableLayoutPanelStats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            tableLayoutPanelStats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
+            tableLayoutPanelStats.ColumnCount = 5;
+            tableLayoutPanelStats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+            tableLayoutPanelStats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+            tableLayoutPanelStats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+            tableLayoutPanelStats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
+            tableLayoutPanelStats.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
             tableLayoutPanelStats.Controls.Add(panelBooks, 0, 0);
             tableLayoutPanelStats.Controls.Add(panelMembers, 1, 0);
             tableLayoutPanelStats.Controls.Add(panelActiveIssues, 2, 0);
             tableLayoutPanelStats.Controls.Add(panelReturned, 3, 0);
+            tableLayoutPanelStats.Controls.Add(panelReservations, 4, 0);
             tableLayoutPanelStats.Dock = DockStyle.Fill;
             tableLayoutPanelStats.Location = new Point(15, 93);
             tableLayoutPanelStats.Name = "tableLayoutPanelStats";
@@ -151,7 +157,7 @@ namespace App.WindowsApp.Views
             panelBooks.Dock = DockStyle.Fill;
             panelBooks.Location = new Point(3, 3);
             panelBooks.Name = "panelBooks";
-            panelBooks.Size = new Size(155, 123);
+            panelBooks.Size = new Size(123, 123);
             panelBooks.TabIndex = 0;
             // 
             // labelBooksCount
@@ -181,9 +187,9 @@ namespace App.WindowsApp.Views
             panelMembers.Controls.Add(labelMembersCount);
             panelMembers.Controls.Add(labelMembersTitle);
             panelMembers.Dock = DockStyle.Fill;
-            panelMembers.Location = new Point(164, 3);
+            panelMembers.Location = new Point(132, 3);
             panelMembers.Name = "panelMembers";
-            panelMembers.Size = new Size(155, 123);
+            panelMembers.Size = new Size(123, 123);
             panelMembers.TabIndex = 1;
             // 
             // labelMembersCount
@@ -213,9 +219,9 @@ namespace App.WindowsApp.Views
             panelActiveIssues.Controls.Add(labelActiveIssuesCount);
             panelActiveIssues.Controls.Add(labelActiveIssuesTitle);
             panelActiveIssues.Dock = DockStyle.Fill;
-            panelActiveIssues.Location = new Point(325, 3);
+            panelActiveIssues.Location = new Point(261, 3);
             panelActiveIssues.Name = "panelActiveIssues";
-            panelActiveIssues.Size = new Size(155, 123);
+            panelActiveIssues.Size = new Size(123, 123);
             panelActiveIssues.TabIndex = 2;
             // 
             // labelActiveIssuesCount
@@ -245,9 +251,9 @@ namespace App.WindowsApp.Views
             panelReturned.Controls.Add(labelReturnedCount);
             panelReturned.Controls.Add(labelReturnedTitle);
             panelReturned.Dock = DockStyle.Fill;
-            panelReturned.Location = new Point(486, 3);
+            panelReturned.Location = new Point(390, 3);
             panelReturned.Name = "panelReturned";
-            panelReturned.Size = new Size(157, 123);
+            panelReturned.Size = new Size(123, 123);
             panelReturned.TabIndex = 3;
             // 
             // labelReturnedCount
@@ -269,6 +275,38 @@ namespace App.WindowsApp.Views
             labelReturnedTitle.Size = new Size(69, 19);
             labelReturnedTitle.TabIndex = 0;
             labelReturnedTitle.Text = "Returned";
+            // 
+            // panelReservations
+            // 
+            panelReservations.BackColor = Color.Azure;
+            panelReservations.BorderStyle = BorderStyle.FixedSingle;
+            panelReservations.Controls.Add(labelReservationsCount);
+            panelReservations.Controls.Add(labelReservationsTitle);
+            panelReservations.Dock = DockStyle.Fill;
+            panelReservations.Location = new Point(519, 3);
+            panelReservations.Name = "panelReservations";
+            panelReservations.Size = new Size(124, 123);
+            panelReservations.TabIndex = 4;
+            // 
+            // labelReservationsCount
+            // 
+            labelReservationsCount.AutoSize = true;
+            labelReservationsCount.Font = new Font("Segoe UI", 24F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelReservationsCount.Location = new Point(14, 41);
+            labelReservationsCount.Name = "labelReservationsCount";
+            labelReservationsCount.Size = new Size(38, 45);
+            labelReservationsCount.TabIndex = 1;
+            labelReservationsCount.Text = "0";
+            // 
+            // labelReservationsTitle
+            // 
+            labelReservationsTitle.AutoSize = true;
+            labelReservationsTitle.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelReservationsTitle.Location = new Point(16, 17);
+            labelReservationsTitle.Name = "labelReservationsTitle";
+            labelReservationsTitle.Size = new Size(93, 19);
+            labelReservationsTitle.TabIndex = 0;
+            labelReservationsTitle.Text = "Reservations";
             // 
             // panelFooter
             // 
@@ -310,6 +348,8 @@ namespace App.WindowsApp.Views
             panelActiveIssues.PerformLayout();
             panelReturned.ResumeLayout(false);
             panelReturned.PerformLayout();
+            panelReservations.ResumeLayout(false);
+            panelReservations.PerformLayout();
             panelFooter.ResumeLayout(false);
             panelFooter.PerformLayout();
             ResumeLayout(false);
@@ -335,6 +375,9 @@ namespace App.WindowsApp.Views
         private Panel panelReturned;
         private Label labelReturnedCount;
         private Label labelReturnedTitle;
+        private Panel panelReservations;
+        private Label labelReservationsCount;
+        private Label labelReservationsTitle;
         private Panel panelFooter;
         private Label labelFooter;
     }

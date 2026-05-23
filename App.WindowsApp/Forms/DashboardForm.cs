@@ -43,5 +43,10 @@ namespace App.WindowsApp.Forms
         {
             ShowView(new IssueView());
         }
+
+        private void buttonReservations_Click(object sender, EventArgs e)
+        {
+            ShowView(new ReservationView());
+        }
     }
 }

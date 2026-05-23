@@ -20,4 +20,11 @@ namespace App.WindowsApp.Forms
         Edit,
         View
     }
+
+    public enum ReservationFormModeEnum
+    {
+        Add,
+        Edit,
+        View
+    }
 }
