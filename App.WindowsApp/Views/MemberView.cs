@@ -12,7 +12,7 @@ namespace App.WindowsApp.Views
 {
     public partial class MemberView : UserControl
     {
-        private IMemberService service;
+        private readonly IMemberService service;
         private readonly BindingSource _dgvBindingSource = new BindingSource();
 
         public MemberView() : this(new MemberService())
@@ -80,19 +80,7 @@ namespace App.WindowsApp.Views
         {
             try
             {
-                IEnumerable<Member> members = service.GetAllMembers();
-                string keyword = textBoxSearch.Text.Trim();
-
-                if (!string.IsNullOrWhiteSpace(keyword))
-                {
-                    members = members.Where(member =>
-                        member.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        member.Email.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        member.Phone.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        member.Address.Contains(keyword, StringComparison.OrdinalIgnoreCase));
-                }
-
-                _dgvBindingSource.DataSource = members.ToList();
+                _dgvBindingSource.DataSource = GetFilteredMembers().ToList();
             }
             catch (Exception ex)
             {
@@ -100,16 +88,42 @@ namespace App.WindowsApp.Views
             }
         }
 
+        private IEnumerable<Member> GetFilteredMembers()
+        {
+            IEnumerable<Member> members = service.GetAllMembers();
+            string keyword = textBoxSearch.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                return members;
+            }
+
+            return members.Where(member =>
+                member.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                member.Email.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                member.Phone.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                member.Address.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+        }
+
         private Member? GetSelectedMember()
         {
             return _dgvBindingSource.Current as Member;
         }
 
+        private void ShowMemberForm(MemberFormModeEnum mode, Member? member = null, bool refreshAfterClose = true)
+        {
+            using MemberForm form = new MemberForm(mode, member, service);
+            form.ShowDialog();
+
+            if (refreshAfterClose)
+            {
+                RefreshGrid();
+            }
+        }
+
         private void toolStripButtonAdd_Click(object sender, EventArgs e)
         {
-            using MemberForm form = new MemberForm(MemberFormModeEnum.Add, null, service);
-            form.ShowDialog();
-            RefreshGrid();
+            ShowMemberForm(MemberFormModeEnum.Add);
         }
 
         private void toolStripButtonEdit_Click(object sender, EventArgs e)
@@ -121,9 +135,7 @@ namespace App.WindowsApp.Views
                 return;
             }
 
-            using MemberForm form = new MemberForm(MemberFormModeEnum.Edit, selectedMember, service);
-            form.ShowDialog();
-            RefreshGrid();
+            ShowMemberForm(MemberFormModeEnum.Edit, selectedMember);
         }
 
         private void toolStripButtonView_Click(object sender, EventArgs e)
@@ -135,8 +147,7 @@ namespace App.WindowsApp.Views
                 return;
             }
 
-            using MemberForm form = new MemberForm(MemberFormModeEnum.View, selectedMember, service);
-            form.ShowDialog();
+            ShowMemberForm(MemberFormModeEnum.View, selectedMember, refreshAfterClose: false);
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)

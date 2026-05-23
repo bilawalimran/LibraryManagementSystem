@@ -13,7 +13,9 @@ namespace App.WindowsApp.Views
 {
     public partial class BookView : UserControl
     {
-        private IBookService service;
+        private const string AllCategories = "--All--";
+
+        private readonly IBookService service;
         private readonly BindingSource _dgvBindingSource = new BindingSource();
 
         public BookView() : this(new BookService())
@@ -84,7 +86,7 @@ namespace App.WindowsApp.Views
         {
             comboBoxCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxCategory.Items.Clear();
-            comboBoxCategory.Items.Add("--All--");
+            comboBoxCategory.Items.Add(AllCategories);
 
             foreach (BookCategory category in Enum.GetValues(typeof(BookCategory)))
             {
@@ -98,28 +100,7 @@ namespace App.WindowsApp.Views
         {
             try
             {
-                IEnumerable<Book> books = service.GetAllBooks();
-                string keyword = textBoxSearch.Text.Trim();
-                BookCategory? selectedCategory = null;
-
-                if (comboBoxCategory.SelectedItem is BookCategory category)
-                {
-                    selectedCategory = category;
-                }
-
-                if (!string.IsNullOrWhiteSpace(keyword))
-                {
-                    books = books.Where(book =>
-                        book.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        book.Author.Contains(keyword, StringComparison.OrdinalIgnoreCase));
-                }
-
-                if (selectedCategory.HasValue)
-                {
-                    books = books.Where(book => book.Category == selectedCategory.Value);
-                }
-
-                _dgvBindingSource.DataSource = books.ToList();
+                _dgvBindingSource.DataSource = GetFilteredBooks().ToList();
             }
             catch (Exception ex)
             {
@@ -127,16 +108,51 @@ namespace App.WindowsApp.Views
             }
         }
 
+        private IEnumerable<Book> GetFilteredBooks()
+        {
+            IEnumerable<Book> books = service.GetAllBooks();
+            string keyword = textBoxSearch.Text.Trim();
+            BookCategory? selectedCategory = GetSelectedCategory();
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                books = books.Where(book =>
+                    book.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    book.Author.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (selectedCategory.HasValue)
+            {
+                books = books.Where(book => book.Category == selectedCategory.Value);
+            }
+
+            return books;
+        }
+
+        private BookCategory? GetSelectedCategory()
+        {
+            return comboBoxCategory.SelectedItem is BookCategory category ? category : null;
+        }
+
         private Book? GetSelectedBook()
         {
             return _dgvBindingSource.Current as Book;
         }
 
+        private void ShowBookForm(BookFormModeEnum mode, Book? book = null, bool refreshAfterClose = true)
+        {
+            using BookForm form = new BookForm(mode, book, service);
+            form.ShowDialog();
+
+            if (refreshAfterClose)
+            {
+                RefreshGrid();
+            }
+        }
+
         private void toolStripButtonAdd_Click(object sender, EventArgs e)
         {
-            using BookForm form = new BookForm(BookFormModeEnum.Add, null, service);
-            form.ShowDialog();
-            RefreshGrid();
+            ShowBookForm(BookFormModeEnum.Add);
         }
 
         private void toolStripButtonEdit_Click(object sender, EventArgs e)
@@ -148,9 +164,7 @@ namespace App.WindowsApp.Views
                 return;
             }
 
-            using BookForm form = new BookForm(BookFormModeEnum.Edit, selectedBook, service);
-            form.ShowDialog();
-            RefreshGrid();
+            ShowBookForm(BookFormModeEnum.Edit, selectedBook);
         }
 
         private void toolStripButtonView_Click(object sender, EventArgs e)
@@ -162,8 +176,7 @@ namespace App.WindowsApp.Views
                 return;
             }
 
-            using BookForm form = new BookForm(BookFormModeEnum.View, selectedBook, service);
-            form.ShowDialog();
+            ShowBookForm(BookFormModeEnum.View, selectedBook, refreshAfterClose: false);
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)

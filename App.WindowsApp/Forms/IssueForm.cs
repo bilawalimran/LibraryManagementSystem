@@ -9,10 +9,10 @@ namespace App.WindowsApp.Forms
     public partial class IssueForm : Form
     {
         private readonly IssueFormModeEnum _mode;
-        private IssueRecord? _issue;
         private readonly IIssueService _issueService;
         private readonly IBookService _bookService;
         private readonly IMemberService _memberService;
+        private IssueRecord? _issue;
 
         public IssueRecord? Issue { get; private set; }
 
@@ -42,30 +42,7 @@ namespace App.WindowsApp.Forms
             _memberService = memberService;
 
             LoadSelections();
-
-            if (_mode == IssueFormModeEnum.Edit)
-            {
-                buttonSave.Text = "Return";
-            }
-            else if (_mode == IssueFormModeEnum.View)
-            {
-                buttonSave.Visible = false;
-            }
-
-            if (_mode == IssueFormModeEnum.Edit || _mode == IssueFormModeEnum.View)
-            {
-                if (_issue != null)
-                {
-                    LoadIssue(_issue);
-                }
-            }
-            else
-            {
-                textBoxId.Text = new IssueRecord().Id;
-                dateTimePickerIssueDate.Value = DateTime.Now;
-                checkBoxReturned.Checked = false;
-            }
-
+            LoadInitialData();
             ApplyMode();
         }
 
@@ -81,6 +58,22 @@ namespace App.WindowsApp.Forms
             comboBoxMembers.DataSource = _memberService.GetAllMembers();
             comboBoxMembers.DisplayMember = "Name";
             comboBoxMembers.ValueMember = "Id";
+        }
+
+        private void LoadInitialData()
+        {
+            if (_issue != null)
+            {
+                LoadIssue(_issue);
+                return;
+            }
+
+            if (_mode == IssueFormModeEnum.Add)
+            {
+                textBoxId.Text = new IssueRecord().Id;
+                dateTimePickerIssueDate.Value = DateTime.Now;
+                checkBoxReturned.Checked = false;
+            }
         }
 
         private void LoadIssue(IssueRecord issue)
@@ -111,14 +104,10 @@ namespace App.WindowsApp.Forms
             comboBoxMembers.Enabled = _mode == IssueFormModeEnum.Add;
             dateTimePickerIssueDate.Enabled = _mode == IssueFormModeEnum.Add;
             checkBoxReturned.Enabled = _mode == IssueFormModeEnum.Add;
-
-            if (isEditMode)
-            {
-                checkBoxReturned.Checked = true;
-            }
-
+            checkBoxReturned.Checked = isEditMode || checkBoxReturned.Checked;
             dateTimePickerReturnDate.Enabled = !isViewMode && checkBoxReturned.Checked;
             buttonSave.Visible = !isViewMode;
+            buttonSave.Text = isEditMode ? "Return" : "Save";
             buttonCancel.Text = isViewMode ? "Close" : "Cancel";
         }
 
@@ -140,53 +129,71 @@ namespace App.WindowsApp.Forms
                 return;
             }
 
+            if (!ValidateForm(out DateTime? returnDate))
+            {
+                return;
+            }
+
+            SaveIssue(returnDate);
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private bool ValidateForm(out DateTime? returnDate)
+        {
+            returnDate = checkBoxReturned.Checked ? dateTimePickerReturnDate.Value : null;
+
             if (comboBoxBooks.SelectedValue == null)
             {
                 MessageBox.Show("Please select a book.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                return false;
             }
 
             if (comboBoxMembers.SelectedValue == null)
             {
                 MessageBox.Show("Please select a member.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                return false;
             }
-
-            DateTime? returnDate = checkBoxReturned.Checked ? dateTimePickerReturnDate.Value : null;
 
             if (returnDate.HasValue && returnDate.Value.Date < dateTimePickerIssueDate.Value.Date)
             {
                 MessageBox.Show("Return date cannot be before issue date.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void SaveIssue(DateTime? returnDate)
+        {
+            if (_mode == IssueFormModeEnum.Add)
+            {
+                IssueRecord newIssue = ReadIssueFromForm(new IssueRecord(), returnDate);
+                _issueService.IssueBook(newIssue);
+                Issue = newIssue;
                 return;
             }
 
-            if (_mode == IssueFormModeEnum.Add)
-            {
-                IssueRecord newIssue = new IssueRecord
-                {
-                    Id = string.IsNullOrWhiteSpace(textBoxId.Text)
-                        ? new IssueRecord().Id
-                        : textBoxId.Text.Trim(),
-                    BookId = comboBoxBooks.SelectedValue.ToString() ?? string.Empty,
-                    MemberId = comboBoxMembers.SelectedValue.ToString() ?? string.Empty,
-                    IssueDate = dateTimePickerIssueDate.Value,
-                    ReturnDate = returnDate
-                };
-
-                _issueService.IssueBook(newIssue);
-                Issue = newIssue;
-            }
-            else if (_mode == IssueFormModeEnum.Edit && _issue != null)
+            if (_mode == IssueFormModeEnum.Edit && _issue != null)
             {
                 DateTime selectedReturnDate = returnDate ?? DateTime.Now;
                 _issue.ReturnDate = selectedReturnDate;
-
                 _issueService.ReturnBook(_issue.Id, selectedReturnDate);
                 Issue = _issue;
             }
+        }
 
-            DialogResult = DialogResult.OK;
-            Close();
+        private IssueRecord ReadIssueFromForm(IssueRecord issue, DateTime? returnDate)
+        {
+            issue.Id = string.IsNullOrWhiteSpace(textBoxId.Text)
+                ? issue.Id
+                : textBoxId.Text.Trim();
+            issue.BookId = Convert.ToString(comboBoxBooks.SelectedValue) ?? string.Empty;
+            issue.MemberId = Convert.ToString(comboBoxMembers.SelectedValue) ?? string.Empty;
+            issue.IssueDate = dateTimePickerIssueDate.Value;
+            issue.ReturnDate = returnDate;
+
+            return issue;
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)

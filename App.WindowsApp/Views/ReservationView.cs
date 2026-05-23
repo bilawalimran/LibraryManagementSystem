@@ -13,9 +13,9 @@ namespace App.WindowsApp.Views
 {
     public partial class ReservationView : UserControl
     {
-        private IReservationService service;
-        private IBookService bookService;
-        private IMemberService memberService;
+        private readonly IReservationService service;
+        private readonly IBookService bookService;
+        private readonly IMemberService memberService;
         private readonly BindingSource _dgvBindingSource = new BindingSource();
 
         public ReservationView() : this(new ReservationService(), new BookService(), new MemberService())
@@ -91,39 +91,51 @@ namespace App.WindowsApp.Views
         {
             try
             {
-                IEnumerable<Reservation> reservations = service.GetAllReservations();
-                var books = bookService.GetAllBooks().ToDictionary(book => book.Id, book => book.Title);
-                var members = memberService.GetAllMembers().ToDictionary(member => member.Id, member => member.Name);
-                string keyword = textBoxSearch.Text.Trim();
-
-                if (!string.IsNullOrWhiteSpace(keyword))
-                {
-                    reservations = reservations.Where(reservation =>
-                        reservation.Id.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        reservation.BookId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        reservation.MemberId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        reservation.Status.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        GetBookName(books, reservation.BookId).Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        GetMemberName(members, reservation.MemberId).Contains(keyword, StringComparison.OrdinalIgnoreCase));
-                }
-
-                _dgvBindingSource.DataSource = reservations
-                    .Select(reservation => new ReservationGridRow
-                    {
-                        Id = reservation.Id,
-                        Book = GetBookName(books, reservation.BookId),
-                        Member = GetMemberName(members, reservation.MemberId),
-                        ReservationDate = reservation.ReservationDate,
-                        ExpiryDate = reservation.ExpiryDate,
-                        Status = reservation.Status,
-                        Reservation = reservation
-                    })
-                    .ToList();
+                _dgvBindingSource.DataSource = GetReservationRows().ToList();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Unable to load reservations", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private IEnumerable<ReservationGridRow> GetReservationRows()
+        {
+            var books = bookService.GetAllBooks().ToDictionary(book => book.Id, book => book.Title);
+            var members = memberService.GetAllMembers().ToDictionary(member => member.Id, member => member.Name);
+
+            return GetFilteredReservations(books, members)
+                .Select(reservation => new ReservationGridRow
+                {
+                    Id = reservation.Id,
+                    Book = GetBookName(books, reservation.BookId),
+                    Member = GetMemberName(members, reservation.MemberId),
+                    ReservationDate = reservation.ReservationDate,
+                    ExpiryDate = reservation.ExpiryDate,
+                    Status = reservation.Status,
+                    Reservation = reservation
+                });
+        }
+
+        private IEnumerable<Reservation> GetFilteredReservations(
+            Dictionary<string, string> books,
+            Dictionary<string, string> members)
+        {
+            IEnumerable<Reservation> reservations = service.GetAllReservations();
+            string keyword = textBoxSearch.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                return reservations;
+            }
+
+            return reservations.Where(reservation =>
+                reservation.Id.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                reservation.BookId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                reservation.MemberId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                reservation.Status.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                GetBookName(books, reservation.BookId).Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                GetMemberName(members, reservation.MemberId).Contains(keyword, StringComparison.OrdinalIgnoreCase));
         }
 
         private static string GetBookName(Dictionary<string, string> books, string bookId)
@@ -141,16 +153,28 @@ namespace App.WindowsApp.Views
             return _dgvBindingSource.Current as ReservationGridRow;
         }
 
-        private void toolStripButtonAdd_Click(object sender, EventArgs e)
+        private void ShowReservationForm(
+            ReservationFormModeEnum mode,
+            Reservation? reservation = null,
+            bool refreshAfterClose = true)
         {
             using ReservationForm form = new ReservationForm(
-                ReservationFormModeEnum.Add,
-                null,
+                mode,
+                reservation,
                 service,
                 bookService,
                 memberService);
             form.ShowDialog();
-            RefreshGrid();
+
+            if (refreshAfterClose)
+            {
+                RefreshGrid();
+            }
+        }
+
+        private void toolStripButtonAdd_Click(object sender, EventArgs e)
+        {
+            ShowReservationForm(ReservationFormModeEnum.Add);
         }
 
         private void toolStripButtonEdit_Click(object sender, EventArgs e)
@@ -163,14 +187,7 @@ namespace App.WindowsApp.Views
                 return;
             }
 
-            using ReservationForm form = new ReservationForm(
-                ReservationFormModeEnum.Edit,
-                selectedReservation.Reservation,
-                service,
-                bookService,
-                memberService);
-            form.ShowDialog();
-            RefreshGrid();
+            ShowReservationForm(ReservationFormModeEnum.Edit, selectedReservation.Reservation);
         }
 
         private void toolStripButtonView_Click(object sender, EventArgs e)
@@ -183,13 +200,10 @@ namespace App.WindowsApp.Views
                 return;
             }
 
-            using ReservationForm form = new ReservationForm(
+            ShowReservationForm(
                 ReservationFormModeEnum.View,
                 selectedReservation.Reservation,
-                service,
-                bookService,
-                memberService);
-            form.ShowDialog();
+                refreshAfterClose: false);
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)

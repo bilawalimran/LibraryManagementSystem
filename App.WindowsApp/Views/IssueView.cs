@@ -12,9 +12,9 @@ namespace App.WindowsApp.Views
 {
     public partial class IssueView : UserControl
     {
-        private IIssueService service;
-        private IBookService bookService;
-        private IMemberService memberService;
+        private readonly IIssueService service;
+        private readonly IBookService bookService;
+        private readonly IMemberService memberService;
         private readonly BindingSource _dgvBindingSource = new BindingSource();
 
         public IssueView() : this(new IssueService(), new BookService(), new MemberService())
@@ -86,37 +86,49 @@ namespace App.WindowsApp.Views
         {
             try
             {
-                IEnumerable<IssueRecord> issues = service.GetAllIssues();
-                var books = bookService.GetAllBooks().ToDictionary(book => book.Id, book => book.Title);
-                var members = memberService.GetAllMembers().ToDictionary(member => member.Id, member => member.Name);
-                string keyword = textBoxSearch.Text.Trim();
-
-                if (!string.IsNullOrWhiteSpace(keyword))
-                {
-                    issues = issues.Where(issue =>
-                        issue.Id.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        issue.BookId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        issue.MemberId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        GetBookName(books, issue.BookId).Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                        GetMemberName(members, issue.MemberId).Contains(keyword, StringComparison.OrdinalIgnoreCase));
-                }
-
-                _dgvBindingSource.DataSource = issues
-                    .Select(issue => new IssueGridRow
-                    {
-                        Id = issue.Id,
-                        Book = GetBookName(books, issue.BookId),
-                        Member = GetMemberName(members, issue.MemberId),
-                        IssueDate = issue.IssueDate,
-                        ReturnDate = issue.ReturnDate,
-                        Issue = issue
-                    })
-                    .ToList();
+                _dgvBindingSource.DataSource = GetIssueRows().ToList();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Unable to load issues", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private IEnumerable<IssueGridRow> GetIssueRows()
+        {
+            var books = bookService.GetAllBooks().ToDictionary(book => book.Id, book => book.Title);
+            var members = memberService.GetAllMembers().ToDictionary(member => member.Id, member => member.Name);
+
+            return GetFilteredIssues(books, members)
+                .Select(issue => new IssueGridRow
+                {
+                    Id = issue.Id,
+                    Book = GetBookName(books, issue.BookId),
+                    Member = GetMemberName(members, issue.MemberId),
+                    IssueDate = issue.IssueDate,
+                    ReturnDate = issue.ReturnDate,
+                    Issue = issue
+                });
+        }
+
+        private IEnumerable<IssueRecord> GetFilteredIssues(
+            Dictionary<string, string> books,
+            Dictionary<string, string> members)
+        {
+            IEnumerable<IssueRecord> issues = service.GetAllIssues();
+            string keyword = textBoxSearch.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                return issues;
+            }
+
+            return issues.Where(issue =>
+                issue.Id.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                issue.BookId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                issue.MemberId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                GetBookName(books, issue.BookId).Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                GetMemberName(members, issue.MemberId).Contains(keyword, StringComparison.OrdinalIgnoreCase));
         }
 
         private static string GetBookName(Dictionary<string, string> books, string bookId)
@@ -139,11 +151,16 @@ namespace App.WindowsApp.Views
             return GetSelectedIssueRow()?.Issue;
         }
 
-        private void toolStripButtonIssue_Click(object sender, EventArgs e)
+        private void ShowIssueForm(IssueFormModeEnum mode, IssueRecord? issue = null)
         {
-            using IssueForm form = new IssueForm(IssueFormModeEnum.Add, null, service, bookService, memberService);
+            using IssueForm form = new IssueForm(mode, issue, service, bookService, memberService);
             form.ShowDialog();
             RefreshGrid();
+        }
+
+        private void toolStripButtonIssue_Click(object sender, EventArgs e)
+        {
+            ShowIssueForm(IssueFormModeEnum.Add);
         }
 
         private void toolStripButtonReturn_Click(object sender, EventArgs e)
@@ -170,9 +187,7 @@ namespace App.WindowsApp.Views
                 }
             }
 
-            using IssueForm form = new IssueForm(IssueFormModeEnum.Edit, issue, service, bookService, memberService);
-            form.ShowDialog();
-            RefreshGrid();
+            ShowIssueForm(IssueFormModeEnum.Edit, issue);
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)
