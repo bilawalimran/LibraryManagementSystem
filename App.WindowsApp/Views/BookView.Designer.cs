@@ -219,6 +219,7 @@
             dataGridViewBooks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridViewBooks.Size = new Size(668, 315);
             dataGridViewBooks.TabIndex = 2;
+            dataGridViewBooks.CellContentClick += dataGridViewBooks_CellContentClick;
             // 
             // Id
             // 

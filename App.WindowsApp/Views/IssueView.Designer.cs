@@ -61,9 +61,9 @@
             tableLayoutPanel.Location = new Point(0, 0);
             tableLayoutPanel.Name = "tableLayoutPanel";
             tableLayoutPanel.RowCount = 3;
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 9.995673F));
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 11.2505407F));
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 78.75379F));
+            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 69F));
+            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 71F));
             tableLayoutPanel.Size = new Size(674, 462);
             tableLayoutPanel.TabIndex = 0;
             // 
@@ -73,7 +73,7 @@
             toolStripIssues.Items.AddRange(new ToolStripItem[] { toolStripButtonIssue, toolStripButtonReturn, toolStripButtonDelete, toolStripSeparator, toolStripButtonRefresh });
             toolStripIssues.Location = new Point(0, 0);
             toolStripIssues.Name = "toolStripIssues";
-            toolStripIssues.Size = new Size(674, 46);
+            toolStripIssues.Size = new Size(674, 40);
             toolStripIssues.TabIndex = 0;
             toolStripIssues.Text = "toolStrip";
             // 
@@ -125,9 +125,9 @@
             flowLayoutPanel.Controls.Add(labelSearch);
             flowLayoutPanel.Controls.Add(textBoxSearch);
             flowLayoutPanel.Dock = DockStyle.Fill;
-            flowLayoutPanel.Location = new Point(3, 49);
+            flowLayoutPanel.Location = new Point(3, 43);
             flowLayoutPanel.Name = "flowLayoutPanel";
-            flowLayoutPanel.Size = new Size(668, 45);
+            flowLayoutPanel.Size = new Size(668, 63);
             flowLayoutPanel.TabIndex = 1;
             // 
             // labelSearch
@@ -155,13 +155,13 @@
             dataGridViewIssues.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewIssues.Columns.AddRange(new DataGridViewColumn[] { Id, Book, Member, IssueDate, ReturnDate });
             dataGridViewIssues.Dock = DockStyle.Fill;
-            dataGridViewIssues.Location = new Point(3, 100);
+            dataGridViewIssues.Location = new Point(3, 112);
             dataGridViewIssues.MultiSelect = false;
             dataGridViewIssues.Name = "dataGridViewIssues";
             dataGridViewIssues.ReadOnly = true;
             dataGridViewIssues.RowHeadersVisible = false;
             dataGridViewIssues.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridViewIssues.Size = new Size(668, 359);
+            dataGridViewIssues.Size = new Size(668, 347);
             dataGridViewIssues.TabIndex = 2;
             // 
             // Id

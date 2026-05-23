@@ -215,5 +215,10 @@ namespace App.WindowsApp.Views
         {
             RefreshGrid();
         }
+
+        private void dataGridViewBooks_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
