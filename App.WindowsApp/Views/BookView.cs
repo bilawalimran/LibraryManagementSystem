@@ -1,4 +1,5 @@
 using App.Core.Enums;
+using App.Core.Interfaces;
 using App.Core.Models;
 using App.WindowsApp.Forms;
 using App.Core.Services;
@@ -12,14 +13,34 @@ namespace App.WindowsApp.Views
 {
     public partial class BookView : UserControl
     {
-        private readonly BookService bookService = new BookService();
+        private IBookService service;
+        private readonly BindingSource _dgvBindingSource = new BindingSource();
 
-        public BookView()
+        public BookView() : this(new BookService())
         {
+        }
+
+        public BookView(IBookService _service)
+        {
+            service = _service;
             InitializeComponent();
+            ConfigureGridBinding();
             ApplyStyles();
             LoadCategoryFilter();
-            LoadBooks();
+            RefreshGrid();
+        }
+
+        private void ConfigureGridBinding()
+        {
+            dataGridViewBooks.AutoGenerateColumns = false;
+            Id.DataPropertyName = nameof(Book.Id);
+            Title.DataPropertyName = nameof(Book.Title);
+            Author.DataPropertyName = nameof(Book.Author);
+            Category.DataPropertyName = nameof(Book.Category);
+            Quantity.DataPropertyName = nameof(Book.Quantity);
+            PublishedDate.DataPropertyName = nameof(Book.PublishedDate);
+            PublishedDate.DefaultCellStyle.Format = "d";
+            dataGridViewBooks.DataSource = _dgvBindingSource;
         }
 
         private void ApplyStyles()
@@ -63,23 +84,28 @@ namespace App.WindowsApp.Views
         {
             comboBoxCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxCategory.Items.Clear();
-            comboBoxCategory.Items.Add("All");
+            comboBoxCategory.Items.Add("--All--");
 
             foreach (BookCategory category in Enum.GetValues(typeof(BookCategory)))
             {
-                comboBoxCategory.Items.Add(category.ToString());
+                comboBoxCategory.Items.Add(category);
             }
 
             comboBoxCategory.SelectedIndex = 0;
         }
 
-        private void LoadBooks()
+        private void RefreshGrid()
         {
             try
             {
-                IEnumerable<Book> books = bookService.GetAllBooks();
+                IEnumerable<Book> books = service.GetAllBooks();
                 string keyword = textBoxSearch.Text.Trim();
-                string? category = comboBoxCategory.SelectedItem?.ToString();
+                BookCategory? selectedCategory = null;
+
+                if (comboBoxCategory.SelectedItem is BookCategory category)
+                {
+                    selectedCategory = category;
+                }
 
                 if (!string.IsNullOrWhiteSpace(keyword))
                 {
@@ -88,23 +114,12 @@ namespace App.WindowsApp.Views
                         book.Author.Contains(keyword, StringComparison.OrdinalIgnoreCase));
                 }
 
-                if (!string.IsNullOrWhiteSpace(category) && category != "All")
+                if (selectedCategory.HasValue)
                 {
-                    books = books.Where(book => book.Category.ToString() == category);
+                    books = books.Where(book => book.Category == selectedCategory.Value);
                 }
 
-                dataGridViewBooks.Rows.Clear();
-
-                foreach (Book book in books)
-                {
-                    dataGridViewBooks.Rows.Add(
-                        book.Id,
-                        book.Title,
-                        book.Author,
-                        book.Category,
-                        book.Quantity,
-                        book.PublishedDate.ToShortDateString());
-                }
+                _dgvBindingSource.DataSource = books.ToList();
             }
             catch (Exception ex)
             {
@@ -112,83 +127,49 @@ namespace App.WindowsApp.Views
             }
         }
 
-        private string? GetSelectedBookId()
+        private Book? GetSelectedBook()
         {
-            if (dataGridViewBooks.CurrentRow == null)
-            {
-                return null;
-            }
-
-            return dataGridViewBooks.CurrentRow.Cells["Id"].Value?.ToString();
+            return _dgvBindingSource.Current as Book;
         }
 
         private void toolStripButtonAdd_Click(object sender, EventArgs e)
         {
-            using BookForm form = new BookForm();
-
-            if (form.ShowDialog() == DialogResult.OK && form.Book != null)
-            {
-                bookService.AddBook(form.Book);
-                LoadBooks();
-            }
+            using BookForm form = new BookForm(BookFormModeEnum.Add, null, service);
+            form.ShowDialog();
+            RefreshGrid();
         }
 
         private void toolStripButtonEdit_Click(object sender, EventArgs e)
         {
-            string? bookId = GetSelectedBookId();
-
-            if (string.IsNullOrWhiteSpace(bookId))
+            Book? selectedBook = GetSelectedBook();
+            if (selectedBook == null)
             {
                 MessageBox.Show("Please select a book to edit.", "Edit Book", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            Book? book = bookService.GetBookById(bookId);
-
-            if (book == null)
-            {
-                MessageBox.Show("Selected book was not found.", "Edit Book", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                LoadBooks();
-                return;
-            }
-
-            using BookForm form = new BookForm(book);
-
-            if (form.ShowDialog() == DialogResult.OK && form.Book != null)
-            {
-                bookService.UpdateBook(form.Book);
-                LoadBooks();
-            }
+            using BookForm form = new BookForm(BookFormModeEnum.Edit, selectedBook, service);
+            form.ShowDialog();
+            RefreshGrid();
         }
 
         private void toolStripButtonView_Click(object sender, EventArgs e)
         {
-            string? bookId = GetSelectedBookId();
-
-            if (string.IsNullOrWhiteSpace(bookId))
+            Book? selectedBook = GetSelectedBook();
+            if (selectedBook == null)
             {
                 MessageBox.Show("Please select a book to view.", "View Book", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            Book? book = bookService.GetBookById(bookId);
-
-            if (book == null)
-            {
-                MessageBox.Show("Selected book was not found.", "View Book", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                LoadBooks();
-                return;
-            }
-
-            using BookForm form = new BookForm(book, true);
+            using BookForm form = new BookForm(BookFormModeEnum.View, selectedBook, service);
             form.ShowDialog();
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)
         {
-            string? bookId = GetSelectedBookId();
-
-            if (string.IsNullOrWhiteSpace(bookId))
+            Book? selectedBook = GetSelectedBook();
+            if (selectedBook == null)
             {
                 MessageBox.Show("Please select a book to delete.", "Delete Book", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -202,24 +183,24 @@ namespace App.WindowsApp.Views
 
             if (result == DialogResult.Yes)
             {
-                bookService.DeleteBook(bookId);
-                LoadBooks();
+                service.DeleteBook(selectedBook.Id);
+                RefreshGrid();
             }
         }
 
         private void textBoxSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadBooks();
+            RefreshGrid();
         }
 
         private void comboBoxCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LoadBooks();
+            RefreshGrid();
         }
 
         private void toolStripButtonRefresh_Click(object sender, EventArgs e)
         {
-            LoadBooks();
+            RefreshGrid();
         }
     }
 }

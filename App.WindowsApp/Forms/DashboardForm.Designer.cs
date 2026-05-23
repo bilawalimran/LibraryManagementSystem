@@ -115,6 +115,7 @@
             buttonBooks.Size = new Size(106, 34);
             buttonBooks.TabIndex = 1;
             buttonBooks.Text = "Books";
+            buttonBooks.TextImageRelation = TextImageRelation.ImageBeforeText;
             buttonBooks.UseVisualStyleBackColor = false;
             buttonBooks.Click += buttonBooks_Click;
             // 
@@ -123,11 +124,13 @@
             buttonDashboard.BackColor = Color.Blue;
             buttonDashboard.FlatStyle = FlatStyle.Flat;
             buttonDashboard.ForeColor = SystemColors.Control;
+            buttonDashboard.ImageAlign = ContentAlignment.MiddleLeft;
             buttonDashboard.Location = new Point(6, 6);
             buttonDashboard.Name = "buttonDashboard";
             buttonDashboard.Size = new Size(106, 34);
             buttonDashboard.TabIndex = 0;
             buttonDashboard.Text = "Dashboard";
+            buttonDashboard.TextImageRelation = TextImageRelation.ImageBeforeText;
             buttonDashboard.UseVisualStyleBackColor = false;
             buttonDashboard.Click += buttonDashboard_Click;
             // 

@@ -1,3 +1,4 @@
+using App.Core.Interfaces;
 using App.Core.Models;
 using App.WindowsApp.Forms;
 using App.Core.Services;
@@ -11,13 +12,31 @@ namespace App.WindowsApp.Views
 {
     public partial class MemberView : UserControl
     {
-        private readonly MemberService memberService = new MemberService();
+        private IMemberService service;
+        private readonly BindingSource _dgvBindingSource = new BindingSource();
 
-        public MemberView()
+        public MemberView() : this(new MemberService())
         {
+        }
+
+        public MemberView(IMemberService _service)
+        {
+            service = _service;
             InitializeComponent();
+            ConfigureGridBinding();
             ApplyStyles();
-            LoadMembers();
+            RefreshGrid();
+        }
+
+        private void ConfigureGridBinding()
+        {
+            dataGridViewMembers.AutoGenerateColumns = false;
+            Id.DataPropertyName = nameof(Member.Id);
+            MemberName.DataPropertyName = nameof(Member.Name);
+            Phone.DataPropertyName = nameof(Member.Phone);
+            Email.DataPropertyName = nameof(Member.Email);
+            Address.DataPropertyName = nameof(Member.Address);
+            dataGridViewMembers.DataSource = _dgvBindingSource;
         }
 
         private void ApplyStyles()
@@ -57,11 +76,11 @@ namespace App.WindowsApp.Views
             dataGridViewMembers.RowTemplate.Height = 28;
         }
 
-        private void LoadMembers()
+        private void RefreshGrid()
         {
             try
             {
-                IEnumerable<Member> members = memberService.GetAllMembers();
+                IEnumerable<Member> members = service.GetAllMembers();
                 string keyword = textBoxSearch.Text.Trim();
 
                 if (!string.IsNullOrWhiteSpace(keyword))
@@ -73,17 +92,7 @@ namespace App.WindowsApp.Views
                         member.Address.Contains(keyword, StringComparison.OrdinalIgnoreCase));
                 }
 
-                dataGridViewMembers.Rows.Clear();
-
-                foreach (Member member in members)
-                {
-                    dataGridViewMembers.Rows.Add(
-                        member.Id,
-                        member.Name,
-                        member.Phone,
-                        member.Email,
-                        member.Address);
-                }
+                _dgvBindingSource.DataSource = members.ToList();
             }
             catch (Exception ex)
             {
@@ -91,83 +100,49 @@ namespace App.WindowsApp.Views
             }
         }
 
-        private string? GetSelectedMemberId()
+        private Member? GetSelectedMember()
         {
-            if (dataGridViewMembers.CurrentRow == null)
-            {
-                return null;
-            }
-
-            return dataGridViewMembers.CurrentRow.Cells["Id"].Value?.ToString();
+            return _dgvBindingSource.Current as Member;
         }
 
         private void toolStripButtonAdd_Click(object sender, EventArgs e)
         {
-            using MemberForm form = new MemberForm();
-
-            if (form.ShowDialog() == DialogResult.OK && form.Member != null)
-            {
-                memberService.AddMember(form.Member);
-                LoadMembers();
-            }
+            using MemberForm form = new MemberForm(MemberFormModeEnum.Add, null, service);
+            form.ShowDialog();
+            RefreshGrid();
         }
 
         private void toolStripButtonEdit_Click(object sender, EventArgs e)
         {
-            string? memberId = GetSelectedMemberId();
-
-            if (string.IsNullOrWhiteSpace(memberId))
+            Member? selectedMember = GetSelectedMember();
+            if (selectedMember == null)
             {
                 MessageBox.Show("Please select a member to edit.", "Edit Member", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            Member? member = memberService.GetMemberById(memberId);
-
-            if (member == null)
-            {
-                MessageBox.Show("Selected member was not found.", "Edit Member", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                LoadMembers();
-                return;
-            }
-
-            using MemberForm form = new MemberForm(member);
-
-            if (form.ShowDialog() == DialogResult.OK && form.Member != null)
-            {
-                memberService.UpdateMember(form.Member);
-                LoadMembers();
-            }
+            using MemberForm form = new MemberForm(MemberFormModeEnum.Edit, selectedMember, service);
+            form.ShowDialog();
+            RefreshGrid();
         }
 
         private void toolStripButtonView_Click(object sender, EventArgs e)
         {
-            string? memberId = GetSelectedMemberId();
-
-            if (string.IsNullOrWhiteSpace(memberId))
+            Member? selectedMember = GetSelectedMember();
+            if (selectedMember == null)
             {
                 MessageBox.Show("Please select a member to view.", "View Member", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            Member? member = memberService.GetMemberById(memberId);
-
-            if (member == null)
-            {
-                MessageBox.Show("Selected member was not found.", "View Member", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                LoadMembers();
-                return;
-            }
-
-            using MemberForm form = new MemberForm(member, true);
+            using MemberForm form = new MemberForm(MemberFormModeEnum.View, selectedMember, service);
             form.ShowDialog();
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)
         {
-            string? memberId = GetSelectedMemberId();
-
-            if (string.IsNullOrWhiteSpace(memberId))
+            Member? selectedMember = GetSelectedMember();
+            if (selectedMember == null)
             {
                 MessageBox.Show("Please select a member to delete.", "Delete Member", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -181,19 +156,19 @@ namespace App.WindowsApp.Views
 
             if (result == DialogResult.Yes)
             {
-                memberService.DeleteMember(memberId);
-                LoadMembers();
+                service.DeleteMember(selectedMember.Id);
+                RefreshGrid();
             }
         }
 
         private void textBoxSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadMembers();
+            RefreshGrid();
         }
 
         private void toolStripButtonRefresh_Click(object sender, EventArgs e)
         {
-            LoadMembers();
+            RefreshGrid();
         }
     }
 }

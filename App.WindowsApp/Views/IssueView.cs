@@ -1,3 +1,4 @@
+using App.Core.Interfaces;
 using App.Core.Models;
 using App.WindowsApp.Forms;
 using App.Core.Services;
@@ -11,15 +12,37 @@ namespace App.WindowsApp.Views
 {
     public partial class IssueView : UserControl
     {
-        private readonly IssueService issueService = new IssueService();
-        private readonly BookService bookService = new BookService();
-        private readonly MemberService memberService = new MemberService();
+        private IIssueService service;
+        private IBookService bookService;
+        private IMemberService memberService;
+        private readonly BindingSource _dgvBindingSource = new BindingSource();
 
-        public IssueView()
+        public IssueView() : this(new IssueService(), new BookService(), new MemberService())
         {
+        }
+
+        public IssueView(IIssueService _service, IBookService _bookService, IMemberService _memberService)
+        {
+            service = _service;
+            bookService = _bookService;
+            memberService = _memberService;
             InitializeComponent();
+            ConfigureGridBinding();
             ApplyStyles();
-            LoadIssues();
+            RefreshGrid();
+        }
+
+        private void ConfigureGridBinding()
+        {
+            dataGridViewIssues.AutoGenerateColumns = false;
+            Id.DataPropertyName = nameof(IssueGridRow.Id);
+            Book.DataPropertyName = nameof(IssueGridRow.Book);
+            Member.DataPropertyName = nameof(IssueGridRow.Member);
+            IssueDate.DataPropertyName = nameof(IssueGridRow.IssueDate);
+            ReturnDate.DataPropertyName = nameof(IssueGridRow.ReturnDate);
+            IssueDate.DefaultCellStyle.Format = "d";
+            ReturnDate.DefaultCellStyle.Format = "d";
+            dataGridViewIssues.DataSource = _dgvBindingSource;
         }
 
         private void ApplyStyles()
@@ -59,11 +82,11 @@ namespace App.WindowsApp.Views
             dataGridViewIssues.RowTemplate.Height = 28;
         }
 
-        private void LoadIssues()
+        private void RefreshGrid()
         {
             try
             {
-                IEnumerable<IssueRecord> issues = issueService.GetAllIssues();
+                IEnumerable<IssueRecord> issues = service.GetAllIssues();
                 var books = bookService.GetAllBooks().ToDictionary(book => book.Id, book => book.Title);
                 var members = memberService.GetAllMembers().ToDictionary(member => member.Id, member => member.Name);
                 string keyword = textBoxSearch.Text.Trim();
@@ -78,17 +101,17 @@ namespace App.WindowsApp.Views
                         GetMemberName(members, issue.MemberId).Contains(keyword, StringComparison.OrdinalIgnoreCase));
                 }
 
-                dataGridViewIssues.Rows.Clear();
-
-                foreach (IssueRecord issue in issues)
-                {
-                    dataGridViewIssues.Rows.Add(
-                        issue.Id,
-                        GetBookName(books, issue.BookId),
-                        GetMemberName(members, issue.MemberId),
-                        issue.IssueDate.ToShortDateString(),
-                        issue.ReturnDate?.ToShortDateString() ?? string.Empty);
-                }
+                _dgvBindingSource.DataSource = issues
+                    .Select(issue => new IssueGridRow
+                    {
+                        Id = issue.Id,
+                        Book = GetBookName(books, issue.BookId),
+                        Member = GetMemberName(members, issue.MemberId),
+                        IssueDate = issue.IssueDate,
+                        ReturnDate = issue.ReturnDate,
+                        Issue = issue
+                    })
+                    .ToList();
             }
             catch (Exception ex)
             {
@@ -106,37 +129,21 @@ namespace App.WindowsApp.Views
             return members.TryGetValue(memberId, out string? name) ? name : $"Member #{memberId}";
         }
 
-        private string? GetSelectedIssueId()
+        private IssueGridRow? GetSelectedIssueRow()
         {
-            if (dataGridViewIssues.CurrentRow == null)
-            {
-                return null;
-            }
-
-            return dataGridViewIssues.CurrentRow.Cells["Id"].Value?.ToString();
+            return _dgvBindingSource.Current as IssueGridRow;
         }
 
         private IssueRecord? GetSelectedIssue()
         {
-            string? issueId = GetSelectedIssueId();
-
-            if (string.IsNullOrWhiteSpace(issueId))
-            {
-                return null;
-            }
-
-            return issueService.GetAllIssues().FirstOrDefault(issue => issue.Id == issueId);
+            return GetSelectedIssueRow()?.Issue;
         }
 
         private void toolStripButtonIssue_Click(object sender, EventArgs e)
         {
-            using IssueForm form = new IssueForm();
-
-            if (form.ShowDialog() == DialogResult.OK && form.Issue != null)
-            {
-                issueService.IssueBook(form.Issue);
-                LoadIssues();
-            }
+            using IssueForm form = new IssueForm(IssueFormModeEnum.Add, null, service, bookService, memberService);
+            form.ShowDialog();
+            RefreshGrid();
         }
 
         private void toolStripButtonReturn_Click(object sender, EventArgs e)
@@ -163,20 +170,15 @@ namespace App.WindowsApp.Views
                 }
             }
 
-            using IssueForm form = new IssueForm(issue, true);
-
-            if (form.ShowDialog() == DialogResult.OK && form.Issue?.ReturnDate != null)
-            {
-                issueService.ReturnBook(issue.Id, form.Issue.ReturnDate.Value);
-                LoadIssues();
-            }
+            using IssueForm form = new IssueForm(IssueFormModeEnum.Edit, issue, service, bookService, memberService);
+            form.ShowDialog();
+            RefreshGrid();
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)
         {
-            string? issueId = GetSelectedIssueId();
-
-            if (string.IsNullOrWhiteSpace(issueId))
+            IssueGridRow? selectedIssue = GetSelectedIssueRow();
+            if (selectedIssue == null)
             {
                 MessageBox.Show("Please select an issue record to delete.", "Delete Issue", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -190,19 +192,29 @@ namespace App.WindowsApp.Views
 
             if (result == DialogResult.Yes)
             {
-                issueService.DeleteIssue(issueId);
-                LoadIssues();
+                service.DeleteIssue(selectedIssue.Id);
+                RefreshGrid();
             }
         }
 
         private void toolStripButtonRefresh_Click(object sender, EventArgs e)
         {
-            LoadIssues();
+            RefreshGrid();
         }
 
         private void textBoxSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadIssues();
+            RefreshGrid();
+        }
+
+        private class IssueGridRow
+        {
+            public string Id { get; set; } = string.Empty;
+            public string Book { get; set; } = string.Empty;
+            public string Member { get; set; } = string.Empty;
+            public DateTime IssueDate { get; set; }
+            public DateTime? ReturnDate { get; set; }
+            public IssueRecord Issue { get; set; } = null!;
         }
     }
 }

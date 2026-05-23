@@ -1,5 +1,7 @@
 using App.Core.Enums;
+using App.Core.Interfaces;
 using App.Core.Models;
+using App.Core.Services;
 using System;
 using System.Windows.Forms;
 
@@ -7,24 +9,46 @@ namespace App.WindowsApp.Forms
 {
     public partial class BookForm : Form
     {
-        private readonly bool isReadOnly;
+        private readonly BookFormModeEnum _mode;
+        private Book? _book;
+        private readonly IBookService _service;
 
         public Book? Book { get; private set; }
 
-        public BookForm() : this(null, false)
+        public BookForm() : this(BookFormModeEnum.Add, null, new BookService())
         {
         }
 
-        public BookForm(Book? book, bool isReadOnly = false)
+        public BookForm(Book? book, BookFormModeEnum formMode = BookFormModeEnum.Add)
+            : this(formMode, book, new BookService())
+        {
+        }
+
+        public BookForm(BookFormModeEnum mode, Book? book, IBookService service)
         {
             InitializeComponent();
 
-            this.isReadOnly = isReadOnly;
+            _mode = mode;
+            _book = book;
+            _service = service;
+
             LoadCategories();
 
-            if (book != null)
+            if (_mode == BookFormModeEnum.Edit)
             {
-                LoadBook(book);
+                buttonSave.Text = "Update";
+            }
+            else if (_mode == BookFormModeEnum.View)
+            {
+                buttonSave.Visible = false;
+            }
+
+            if (_mode == BookFormModeEnum.Edit || _mode == BookFormModeEnum.View)
+            {
+                if (_book != null)
+                {
+                    LoadBook(_book);
+                }
             }
             else
             {
@@ -32,7 +56,7 @@ namespace App.WindowsApp.Forms
                 dateTimePickerPublishedDate.Value = DateTime.Today;
             }
 
-            ApplyReadOnlyMode();
+            ApplyMode();
         }
 
         private void LoadCategories()
@@ -46,7 +70,7 @@ namespace App.WindowsApp.Forms
         private void LoadBook(Book book)
         {
             Book = book;
-            textBoxBookId.Text = book.Id.ToString();
+            textBoxBookId.Text = book.Id;
             textBoxTitle.Text = book.Title;
             textBoxAuthor.Text = book.Author;
             comboBoxCategory.SelectedItem = book.Category;
@@ -54,19 +78,35 @@ namespace App.WindowsApp.Forms
             dateTimePickerPublishedDate.Value = book.PublishedDate;
         }
 
-        private void ApplyReadOnlyMode()
+        private void ApplyMode()
         {
-            textBoxTitle.ReadOnly = isReadOnly;
-            textBoxAuthor.ReadOnly = isReadOnly;
-            comboBoxCategory.Enabled = !isReadOnly;
-            numericUpDownQuantity.Enabled = !isReadOnly;
-            dateTimePickerPublishedDate.Enabled = !isReadOnly;
-            buttonSave.Visible = !isReadOnly;
-            buttonCancel.Text = isReadOnly ? "Close" : "Cancel";
+            bool isViewMode = _mode == BookFormModeEnum.View;
+
+            labelBookDetails.Text = _mode switch
+            {
+                BookFormModeEnum.Add => "Add Book",
+                BookFormModeEnum.Edit => "Edit Book",
+                BookFormModeEnum.View => "View Book",
+                _ => "Book Details"
+            };
+
+            textBoxTitle.ReadOnly = isViewMode;
+            textBoxAuthor.ReadOnly = isViewMode;
+            comboBoxCategory.Enabled = !isViewMode;
+            numericUpDownQuantity.Enabled = !isViewMode;
+            dateTimePickerPublishedDate.Enabled = !isViewMode;
+            buttonSave.Visible = !isViewMode;
+            buttonCancel.Text = isViewMode ? "Close" : "Cancel";
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
         {
+            if (_mode == BookFormModeEnum.View)
+            {
+                Close();
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(textBoxTitle.Text))
             {
                 MessageBox.Show("Please enter book title.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -85,17 +125,34 @@ namespace App.WindowsApp.Forms
                 return;
             }
 
-            Book = new Book
+            if (_mode == BookFormModeEnum.Add)
             {
-                Id = string.IsNullOrWhiteSpace(textBoxBookId.Text)
-                    ? new Book().Id
-                    : textBoxBookId.Text.Trim(),
-                Title = textBoxTitle.Text.Trim(),
-                Author = textBoxAuthor.Text.Trim(),
-                Category = selectedCategory,
-                Quantity = (int)numericUpDownQuantity.Value,
-                PublishedDate = dateTimePickerPublishedDate.Value
-            };
+                Book newBook = new Book
+                {
+                    Id = string.IsNullOrWhiteSpace(textBoxBookId.Text)
+                        ? new Book().Id
+                        : textBoxBookId.Text.Trim(),
+                    Title = textBoxTitle.Text.Trim(),
+                    Author = textBoxAuthor.Text.Trim(),
+                    Category = selectedCategory,
+                    Quantity = (int)numericUpDownQuantity.Value,
+                    PublishedDate = dateTimePickerPublishedDate.Value
+                };
+
+                _service.AddBook(newBook);
+                Book = newBook;
+            }
+            else if (_mode == BookFormModeEnum.Edit && _book != null)
+            {
+                _book.Title = textBoxTitle.Text.Trim();
+                _book.Author = textBoxAuthor.Text.Trim();
+                _book.Category = selectedCategory;
+                _book.Quantity = (int)numericUpDownQuantity.Value;
+                _book.PublishedDate = dateTimePickerPublishedDate.Value;
+
+                _service.UpdateBook(_book);
+                Book = _book;
+            }
 
             DialogResult = DialogResult.OK;
             Close();
