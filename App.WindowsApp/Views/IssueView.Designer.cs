@@ -28,6 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             tableLayoutPanel = new TableLayoutPanel();
             toolStripIssues = new ToolStrip();
             toolStripButtonIssue = new ToolStripButton();
@@ -70,9 +74,11 @@
             // toolStripIssues
             // 
             toolStripIssues.Dock = DockStyle.Fill;
+            toolStripIssues.GripStyle = ToolStripGripStyle.Hidden;
             toolStripIssues.Items.AddRange(new ToolStripItem[] { toolStripButtonIssue, toolStripButtonReturn, toolStripButtonDelete, toolStripSeparator, toolStripButtonRefresh });
             toolStripIssues.Location = new Point(0, 0);
             toolStripIssues.Name = "toolStripIssues";
+            toolStripIssues.RenderMode = ToolStripRenderMode.System;
             toolStripIssues.Size = new Size(674, 40);
             toolStripIssues.TabIndex = 0;
             toolStripIssues.Text = "toolStrip";
@@ -82,7 +88,7 @@
             toolStripButtonIssue.Image = Properties.Resources.books_medical;
             toolStripButtonIssue.ImageTransparentColor = Color.Magenta;
             toolStripButtonIssue.Name = "toolStripButtonIssue";
-            toolStripButtonIssue.Size = new Size(83, 43);
+            toolStripButtonIssue.Size = new Size(83, 37);
             toolStripButtonIssue.Text = "Issue Book";
             toolStripButtonIssue.ToolTipText = "Issue";
             toolStripButtonIssue.Click += toolStripButtonIssue_Click;
@@ -92,7 +98,7 @@
             toolStripButtonReturn.Image = Properties.Resources.undo;
             toolStripButtonReturn.ImageTransparentColor = Color.Magenta;
             toolStripButtonReturn.Name = "toolStripButtonReturn";
-            toolStripButtonReturn.Size = new Size(92, 43);
+            toolStripButtonReturn.Size = new Size(92, 37);
             toolStripButtonReturn.Text = "Return Book";
             toolStripButtonReturn.ToolTipText = "Return";
             toolStripButtonReturn.Click += toolStripButtonReturn_Click;
@@ -101,7 +107,7 @@
             // 
             toolStripButtonDelete.Image = Properties.Resources.trash1;
             toolStripButtonDelete.Name = "toolStripButtonDelete";
-            toolStripButtonDelete.Size = new Size(60, 43);
+            toolStripButtonDelete.Size = new Size(60, 37);
             toolStripButtonDelete.Text = "Delete";
             toolStripButtonDelete.ToolTipText = "Delete";
             toolStripButtonDelete.Click += toolStripButtonDelete_Click;
@@ -109,14 +115,14 @@
             // toolStripSeparator
             // 
             toolStripSeparator.Name = "toolStripSeparator";
-            toolStripSeparator.Size = new Size(6, 46);
+            toolStripSeparator.Size = new Size(6, 40);
             // 
             // toolStripButtonRefresh
             // 
             toolStripButtonRefresh.Image = Properties.Resources.refresh;
             toolStripButtonRefresh.ImageTransparentColor = Color.Magenta;
             toolStripButtonRefresh.Name = "toolStripButtonRefresh";
-            toolStripButtonRefresh.Size = new Size(66, 43);
+            toolStripButtonRefresh.Size = new Size(66, 37);
             toolStripButtonRefresh.Text = "Refresh";
             toolStripButtonRefresh.Click += toolStripButtonRefresh_Click;
             // 
@@ -150,11 +156,34 @@
             // 
             // dataGridViewIssues
             // 
+            dataGridViewIssues.AllowUserToAddRows = false;
+            dataGridViewIssues.AllowUserToResizeRows = false;
             dataGridViewIssues.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewIssues.BackgroundColor = Color.White;
+            dataGridViewIssues.BorderStyle = BorderStyle.None;
+            dataGridViewIssues.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewIssues.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Control;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.Desktop;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dataGridViewIssues.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGridViewIssues.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewIssues.Columns.AddRange(new DataGridViewColumn[] { Id, Book, Member, IssueDate, ReturnDate });
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = SystemColors.Window;
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle4.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = Color.IndianRed;
+            dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.False;
+            dataGridViewIssues.DefaultCellStyle = dataGridViewCellStyle4;
             dataGridViewIssues.Dock = DockStyle.Fill;
+            dataGridViewIssues.EnableHeadersVisualStyles = false;
+            dataGridViewIssues.GridColor = Color.White;
             dataGridViewIssues.Location = new Point(3, 112);
             dataGridViewIssues.MultiSelect = false;
             dataGridViewIssues.Name = "dataGridViewIssues";
@@ -166,30 +195,41 @@
             // 
             // Id
             // 
+            Id.DataPropertyName = "Id";
             Id.HeaderText = "Id";
             Id.Name = "Id";
             Id.ReadOnly = true;
             // 
             // Book
             // 
+            Book.DataPropertyName = "Book";
             Book.HeaderText = "Book";
             Book.Name = "Book";
             Book.ReadOnly = true;
             // 
             // Member
             // 
+            Member.DataPropertyName = "Member";
             Member.HeaderText = "Member";
             Member.Name = "Member";
             Member.ReadOnly = true;
             // 
             // IssueDate
             // 
+            IssueDate.DataPropertyName = "IssueDate";
+            dataGridViewCellStyle2.Format = "d";
+            dataGridViewCellStyle2.NullValue = null;
+            IssueDate.DefaultCellStyle = dataGridViewCellStyle2;
             IssueDate.HeaderText = "IssueDate";
             IssueDate.Name = "IssueDate";
             IssueDate.ReadOnly = true;
             // 
             // ReturnDate
             // 
+            ReturnDate.DataPropertyName = "ReturnDate";
+            dataGridViewCellStyle3.Format = "d";
+            dataGridViewCellStyle3.NullValue = null;
+            ReturnDate.DefaultCellStyle = dataGridViewCellStyle3;
             ReturnDate.HeaderText = "ReturnDate";
             ReturnDate.Name = "ReturnDate";
             ReturnDate.ReadOnly = true;

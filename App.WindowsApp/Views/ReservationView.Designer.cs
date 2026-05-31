@@ -17,6 +17,12 @@ namespace App.WindowsApp.Views
 
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
             tableLayoutPanel = new TableLayoutPanel();
             toolStripReservations = new ToolStrip();
             toolStripButtonAdd = new ToolStripButton();
@@ -65,6 +71,7 @@ namespace App.WindowsApp.Views
             // 
             toolStripReservations.BackColor = Color.WhiteSmoke;
             toolStripReservations.Dock = DockStyle.Fill;
+            toolStripReservations.GripStyle = ToolStripGripStyle.Hidden;
             toolStripReservations.Items.AddRange(new ToolStripItem[] { toolStripButtonAdd, toolStripButtonEdit, toolStripButtonView, toolStripButtonDelete, toolStripSeparator, toolStripButtonRefresh });
             toolStripReservations.Location = new Point(0, 0);
             toolStripReservations.Name = "toolStripReservations";
@@ -172,52 +179,97 @@ namespace App.WindowsApp.Views
             // 
             // dataGridViewReservations
             // 
+            dataGridViewReservations.AllowUserToAddRows = false;
             dataGridViewReservations.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewReservations.BackgroundColor = Color.White;
+            dataGridViewReservations.BorderStyle = BorderStyle.None;
+            dataGridViewReservations.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewReservations.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Control;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.Desktop;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dataGridViewReservations.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGridViewReservations.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewReservations.Columns.AddRange(new DataGridViewColumn[] { Id, Book, Member, ReservationDate, ExpiryDate, Status });
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = SystemColors.Window;
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle4.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = SystemColors.Control;
+            dataGridViewCellStyle4.SelectionForeColor = SystemColors.Desktop;
+            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.False;
+            dataGridViewReservations.DefaultCellStyle = dataGridViewCellStyle4;
             dataGridViewReservations.Dock = DockStyle.Fill;
+            dataGridViewReservations.EnableHeadersVisualStyles = false;
+            dataGridViewReservations.GridColor = Color.White;
             dataGridViewReservations.Location = new Point(3, 112);
             dataGridViewReservations.MultiSelect = false;
             dataGridViewReservations.Name = "dataGridViewReservations";
             dataGridViewReservations.ReadOnly = true;
+            dataGridViewReservations.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Sunken;
+            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = Color.LightCoral;
+            dataGridViewCellStyle5.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle5.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = Color.LightCoral;
+            dataGridViewCellStyle5.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = DataGridViewTriState.True;
+            dataGridViewReservations.RowHeadersDefaultCellStyle = dataGridViewCellStyle5;
             dataGridViewReservations.RowHeadersVisible = false;
+            dataGridViewCellStyle6.ForeColor = Color.Black;
+            dataGridViewCellStyle6.SelectionBackColor = Color.LightCoral;
+            dataGridViewCellStyle6.SelectionForeColor = Color.White;
+            dataGridViewReservations.RowsDefaultCellStyle = dataGridViewCellStyle6;
             dataGridViewReservations.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridViewReservations.Size = new Size(668, 315);
             dataGridViewReservations.TabIndex = 2;
             // 
             // Id
             // 
+            Id.DataPropertyName = "Id";
             Id.HeaderText = "Id";
             Id.Name = "Id";
             Id.ReadOnly = true;
             // 
             // Book
             // 
+            Book.DataPropertyName = "Book";
             Book.HeaderText = "Book";
             Book.Name = "Book";
             Book.ReadOnly = true;
             // 
             // Member
             // 
+            Member.DataPropertyName = "Member";
             Member.HeaderText = "Member";
             Member.Name = "Member";
             Member.ReadOnly = true;
             // 
             // ReservationDate
             // 
+            ReservationDate.DataPropertyName = "ReservationDate";
+            dataGridViewCellStyle2.Format = "d";
+            ReservationDate.DefaultCellStyle = dataGridViewCellStyle2;
             ReservationDate.HeaderText = "ReservationDate";
             ReservationDate.Name = "ReservationDate";
             ReservationDate.ReadOnly = true;
             // 
             // ExpiryDate
             // 
+            ExpiryDate.DataPropertyName = "ExpiryDate";
+            dataGridViewCellStyle3.Format = "d";
+            ExpiryDate.DefaultCellStyle = dataGridViewCellStyle3;
             ExpiryDate.HeaderText = "ExpiryDate";
             ExpiryDate.Name = "ExpiryDate";
             ExpiryDate.ReadOnly = true;
             // 
             // Status
             // 
+            Status.DataPropertyName = "Status";
             Status.HeaderText = "Status";
             Status.Name = "Status";
             Status.ReadOnly = true;

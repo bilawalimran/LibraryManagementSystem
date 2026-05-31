@@ -160,6 +160,7 @@ namespace App.WindowsApp.Forms
             // comboBoxBooks
             // 
             comboBoxBooks.Dock = DockStyle.Fill;
+            comboBoxBooks.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxBooks.FormattingEnabled = true;
             comboBoxBooks.Location = new Point(159, 3);
             comboBoxBooks.Name = "comboBoxBooks";
@@ -169,6 +170,7 @@ namespace App.WindowsApp.Forms
             // comboBoxMembers
             // 
             comboBoxMembers.Dock = DockStyle.Fill;
+            comboBoxMembers.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxMembers.FormattingEnabled = true;
             comboBoxMembers.Location = new Point(159, 53);
             comboBoxMembers.Name = "comboBoxMembers";
@@ -205,6 +207,7 @@ namespace App.WindowsApp.Forms
             // comboBoxStatus
             // 
             comboBoxStatus.Dock = DockStyle.Fill;
+            comboBoxStatus.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxStatus.FormattingEnabled = true;
             comboBoxStatus.Location = new Point(159, 253);
             comboBoxStatus.Name = "comboBoxStatus";

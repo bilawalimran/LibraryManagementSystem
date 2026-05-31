@@ -13,8 +13,10 @@ namespace App.Core.Models
         public string Id { get; set; }
         public string BookId { get; set; } = string.Empty;
         public string MemberId { get; set; } = string.Empty;
+        public string BookName { get; set; } = string.Empty;
+        public string MemberName { get; set; } = string.Empty;
         public DateTime ReservationDate { get; set; } = DateTime.Today;
         public DateTime? ExpiryDate { get; set; }
-        public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
+        public ReservationStatus Status { get; set; } 
     }
 }

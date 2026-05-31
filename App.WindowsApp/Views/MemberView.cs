@@ -23,57 +23,8 @@ namespace App.WindowsApp.Views
         {
             service = _service;
             InitializeComponent();
-            ConfigureGridBinding();
-            ApplyStyles();
             RefreshGrid();
-        }
-
-        private void ConfigureGridBinding()
-        {
-            dataGridViewMembers.AutoGenerateColumns = false;
-            Id.DataPropertyName = nameof(Member.Id);
-            MemberName.DataPropertyName = nameof(Member.Name);
-            Phone.DataPropertyName = nameof(Member.Phone);
-            Email.DataPropertyName = nameof(Member.Email);
-            Address.DataPropertyName = nameof(Member.Address);
             dataGridViewMembers.DataSource = _dgvBindingSource;
-        }
-
-        private void ApplyStyles()
-        {
-            Color accentColor = Color.SeaGreen;
-
-            BackColor = Color.White;
-            panelFilters.BackColor = Color.Honeydew;
-            panelFilters.Padding = new Padding(8);
-
-            toolStripMembers.BackColor = Color.WhiteSmoke;
-            toolStripMembers.GripStyle = ToolStripGripStyle.Hidden;
-            toolStripMembers.Padding = new Padding(6, 4, 6, 4);
-            toolStripMembers.RenderMode = ToolStripRenderMode.System;
-
-            foreach (ToolStripItem item in toolStripMembers.Items)
-            {
-                item.Margin = new Padding(2, 0, 2, 0);
-                item.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
-            }
-
-            dataGridViewMembers.BackgroundColor = Color.White;
-            dataGridViewMembers.BorderStyle = BorderStyle.None;
-            dataGridViewMembers.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dataGridViewMembers.GridColor = Color.Gainsboro;
-            dataGridViewMembers.EnableHeadersVisualStyles = false;
-            dataGridViewMembers.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewMembers.ColumnHeadersDefaultCellStyle.BackColor = accentColor;
-            dataGridViewMembers.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dataGridViewMembers.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            dataGridViewMembers.ColumnHeadersDefaultCellStyle.SelectionBackColor = accentColor;
-            dataGridViewMembers.ColumnHeadersHeight = 34;
-            dataGridViewMembers.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
-            dataGridViewMembers.DefaultCellStyle.SelectionBackColor = ControlPaint.Light(accentColor, 0.65F);
-            dataGridViewMembers.DefaultCellStyle.SelectionForeColor = Color.Black;
-            dataGridViewMembers.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(240, 250, 240);
-            dataGridViewMembers.RowTemplate.Height = 28;
         }
 
         private void RefreshGrid()

@@ -31,7 +31,6 @@ namespace App.WindowsApp.Views
             tableLayoutPanelMain = new TableLayoutPanel();
             panelHeader = new Panel();
             buttonRefresh = new Button();
-            labelStatus = new Label();
             labelTitle = new Label();
             tableLayoutPanelStats = new TableLayoutPanel();
             panelBooks = new Panel();
@@ -50,6 +49,9 @@ namespace App.WindowsApp.Views
             labelReservationsCount = new Label();
             labelReservationsTitle = new Label();
             panelFooter = new Panel();
+            tableLayoutPanelCharts = new TableLayoutPanel();
+            panelIssueStatusChart = new Panel();
+            panelLibraryTotalsChart = new Panel();
             labelFooter = new Label();
             tableLayoutPanelMain.SuspendLayout();
             panelHeader.SuspendLayout();
@@ -60,6 +62,7 @@ namespace App.WindowsApp.Views
             panelReturned.SuspendLayout();
             panelReservations.SuspendLayout();
             panelFooter.SuspendLayout();
+            tableLayoutPanelCharts.SuspendLayout();
             SuspendLayout();
             // 
             // tableLayoutPanelMain
@@ -85,7 +88,6 @@ namespace App.WindowsApp.Views
             // 
             panelHeader.BackColor = Color.WhiteSmoke;
             panelHeader.Controls.Add(buttonRefresh);
-            panelHeader.Controls.Add(labelStatus);
             panelHeader.Controls.Add(labelTitle);
             panelHeader.Dock = DockStyle.Fill;
             panelHeader.Location = new Point(15, 15);
@@ -107,23 +109,13 @@ namespace App.WindowsApp.Views
             buttonRefresh.UseVisualStyleBackColor = false;
             buttonRefresh.Click += buttonRefresh_Click;
             // 
-            // labelStatus
-            // 
-            labelStatus.AutoSize = true;
-            labelStatus.ForeColor = Color.DimGray;
-            labelStatus.Location = new Point(18, 43);
-            labelStatus.Name = "labelStatus";
-            labelStatus.Size = new Size(114, 15);
-            labelStatus.TabIndex = 1;
-            labelStatus.Text = "Loading dashboard...";
-            // 
             // labelTitle
             // 
             labelTitle.AutoSize = true;
             labelTitle.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelTitle.Location = new Point(16, 10);
             labelTitle.Name = "labelTitle";
-            labelTitle.Size = new Size(139, 32);
+            labelTitle.Size = new Size(138, 32);
             labelTitle.TabIndex = 0;
             labelTitle.Text = "Dashboard";
             // 
@@ -176,7 +168,7 @@ namespace App.WindowsApp.Views
             labelBooksTitle.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelBooksTitle.Location = new Point(16, 17);
             labelBooksTitle.Name = "labelBooksTitle";
-            labelBooksTitle.Size = new Size(84, 19);
+            labelBooksTitle.Size = new Size(87, 19);
             labelBooksTitle.TabIndex = 0;
             labelBooksTitle.Text = "Total Books";
             // 
@@ -208,7 +200,7 @@ namespace App.WindowsApp.Views
             labelMembersTitle.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelMembersTitle.Location = new Point(16, 17);
             labelMembersTitle.Name = "labelMembersTitle";
-            labelMembersTitle.Size = new Size(68, 19);
+            labelMembersTitle.Size = new Size(72, 19);
             labelMembersTitle.TabIndex = 0;
             labelMembersTitle.Text = "Members";
             // 
@@ -240,7 +232,7 @@ namespace App.WindowsApp.Views
             labelActiveIssuesTitle.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelActiveIssuesTitle.Location = new Point(16, 17);
             labelActiveIssuesTitle.Name = "labelActiveIssuesTitle";
-            labelActiveIssuesTitle.Size = new Size(92, 19);
+            labelActiveIssuesTitle.Size = new Size(93, 19);
             labelActiveIssuesTitle.TabIndex = 0;
             labelActiveIssuesTitle.Text = "Active Issues";
             // 
@@ -272,7 +264,7 @@ namespace App.WindowsApp.Views
             labelReturnedTitle.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelReturnedTitle.Location = new Point(16, 17);
             labelReturnedTitle.Name = "labelReturnedTitle";
-            labelReturnedTitle.Size = new Size(69, 19);
+            labelReturnedTitle.Size = new Size(70, 19);
             labelReturnedTitle.TabIndex = 0;
             labelReturnedTitle.Text = "Returned";
             // 
@@ -304,19 +296,57 @@ namespace App.WindowsApp.Views
             labelReservationsTitle.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelReservationsTitle.Location = new Point(16, 17);
             labelReservationsTitle.Name = "labelReservationsTitle";
-            labelReservationsTitle.Size = new Size(93, 19);
+            labelReservationsTitle.Size = new Size(95, 19);
             labelReservationsTitle.TabIndex = 0;
             labelReservationsTitle.Text = "Reservations";
             // 
             // panelFooter
             // 
             panelFooter.BackColor = Color.White;
+            panelFooter.Controls.Add(tableLayoutPanelCharts);
             panelFooter.Controls.Add(labelFooter);
             panelFooter.Dock = DockStyle.Fill;
             panelFooter.Location = new Point(15, 228);
             panelFooter.Name = "panelFooter";
             panelFooter.Size = new Size(646, 185);
             panelFooter.TabIndex = 2;
+            // 
+            // tableLayoutPanelCharts
+            // 
+            tableLayoutPanelCharts.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanelCharts.ColumnCount = 2;
+            tableLayoutPanelCharts.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanelCharts.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanelCharts.Controls.Add(panelIssueStatusChart, 0, 0);
+            tableLayoutPanelCharts.Controls.Add(panelLibraryTotalsChart, 1, 0);
+            tableLayoutPanelCharts.Location = new Point(4, 45);
+            tableLayoutPanelCharts.Name = "tableLayoutPanelCharts";
+            tableLayoutPanelCharts.RowCount = 1;
+            tableLayoutPanelCharts.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanelCharts.Size = new Size(638, 128);
+            tableLayoutPanelCharts.TabIndex = 1;
+            // 
+            // panelIssueStatusChart
+            // 
+            panelIssueStatusChart.BackColor = Color.White;
+            panelIssueStatusChart.BorderStyle = BorderStyle.FixedSingle;
+            panelIssueStatusChart.Dock = DockStyle.Fill;
+            panelIssueStatusChart.Location = new Point(3, 3);
+            panelIssueStatusChart.Name = "panelIssueStatusChart";
+            panelIssueStatusChart.Size = new Size(313, 122);
+            panelIssueStatusChart.TabIndex = 0;
+            panelIssueStatusChart.Paint += panelIssueStatusChart_Paint;
+            // 
+            // panelLibraryTotalsChart
+            // 
+            panelLibraryTotalsChart.BackColor = Color.White;
+            panelLibraryTotalsChart.BorderStyle = BorderStyle.FixedSingle;
+            panelLibraryTotalsChart.Dock = DockStyle.Fill;
+            panelLibraryTotalsChart.Location = new Point(322, 3);
+            panelLibraryTotalsChart.Name = "panelLibraryTotalsChart";
+            panelLibraryTotalsChart.Size = new Size(313, 122);
+            panelLibraryTotalsChart.TabIndex = 1;
+            panelLibraryTotalsChart.Paint += panelLibraryTotalsChart_Paint;
             // 
             // labelFooter
             // 
@@ -352,6 +382,7 @@ namespace App.WindowsApp.Views
             panelReservations.PerformLayout();
             panelFooter.ResumeLayout(false);
             panelFooter.PerformLayout();
+            tableLayoutPanelCharts.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -360,7 +391,6 @@ namespace App.WindowsApp.Views
         private TableLayoutPanel tableLayoutPanelMain;
         private Panel panelHeader;
         private Button buttonRefresh;
-        private Label labelStatus;
         private Label labelTitle;
         private TableLayoutPanel tableLayoutPanelStats;
         private Panel panelBooks;
@@ -380,5 +410,8 @@ namespace App.WindowsApp.Views
         private Label labelReservationsTitle;
         private Panel panelFooter;
         private Label labelFooter;
+        private TableLayoutPanel tableLayoutPanelCharts;
+        private Panel panelIssueStatusChart;
+        private Panel panelLibraryTotalsChart;
     }
 }

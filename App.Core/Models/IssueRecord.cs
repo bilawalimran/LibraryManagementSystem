@@ -12,6 +12,8 @@ namespace App.Core.Models
         public string Id { get; set; }
         public string BookId { get; set; } = string.Empty;
         public string MemberId { get; set; } = string.Empty;
+        public string BookName { get; set; } = string.Empty;
+        public string MemberName { get; set; } = string.Empty;
         public DateTime IssueDate { get; set; } = DateTime.Today;
         public DateTime? ReturnDate { get; set; }
     }

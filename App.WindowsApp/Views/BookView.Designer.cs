@@ -28,6 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
             tableLayoutPanel = new TableLayoutPanel();
             toolStripBooks = new ToolStrip();
             toolStripButtonAdd = new ToolStripButton();
@@ -76,11 +80,16 @@
             // 
             // toolStripBooks
             // 
-            toolStripBooks.BackColor = Color.WhiteSmoke;
+            toolStripBooks.BackColor = Color.PowderBlue;
             toolStripBooks.Dock = DockStyle.Fill;
+            toolStripBooks.GripStyle = ToolStripGripStyle.Hidden;
             toolStripBooks.Items.AddRange(new ToolStripItem[] { toolStripButtonAdd, toolStripButtonEdit, toolStripButtonView, toolStripButtonDelete, toolStripSeparator, toolStripButtonRefresh });
+            toolStripBooks.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
             toolStripBooks.Location = new Point(0, 0);
             toolStripBooks.Name = "toolStripBooks";
+            toolStripBooks.Padding = new Padding(1);
+            toolStripBooks.RenderMode = ToolStripRenderMode.System;
+            toolStripBooks.ShowItemToolTips = false;
             toolStripBooks.Size = new Size(674, 40);
             toolStripBooks.TabIndex = 0;
             toolStripBooks.Text = "toolStrip";
@@ -90,7 +99,7 @@
             toolStripButtonAdd.Image = Properties.Resources.plus;
             toolStripButtonAdd.ImageTransparentColor = Color.Magenta;
             toolStripButtonAdd.Name = "toolStripButtonAdd";
-            toolStripButtonAdd.Size = new Size(49, 37);
+            toolStripButtonAdd.Size = new Size(49, 35);
             toolStripButtonAdd.Text = "Add";
             toolStripButtonAdd.ToolTipText = "Add";
             toolStripButtonAdd.Click += toolStripButtonAdd_Click;
@@ -100,7 +109,7 @@
             toolStripButtonEdit.Image = Properties.Resources.pencil;
             toolStripButtonEdit.ImageTransparentColor = Color.Magenta;
             toolStripButtonEdit.Name = "toolStripButtonEdit";
-            toolStripButtonEdit.Size = new Size(47, 37);
+            toolStripButtonEdit.Size = new Size(47, 35);
             toolStripButtonEdit.Text = "Edit";
             toolStripButtonEdit.ToolTipText = "Edit";
             toolStripButtonEdit.Click += toolStripButtonEdit_Click;
@@ -110,7 +119,7 @@
             toolStripButtonView.Image = Properties.Resources.eye;
             toolStripButtonView.ImageTransparentColor = Color.Magenta;
             toolStripButtonView.Name = "toolStripButtonView";
-            toolStripButtonView.Size = new Size(52, 37);
+            toolStripButtonView.Size = new Size(52, 35);
             toolStripButtonView.Text = "View";
             toolStripButtonView.Click += toolStripButtonView_Click;
             // 
@@ -119,28 +128,28 @@
             toolStripButtonDelete.Image = Properties.Resources.trash;
             toolStripButtonDelete.ImageTransparentColor = Color.Magenta;
             toolStripButtonDelete.Name = "toolStripButtonDelete";
-            toolStripButtonDelete.Size = new Size(60, 37);
+            toolStripButtonDelete.Size = new Size(60, 35);
             toolStripButtonDelete.Text = "Delete";
             toolStripButtonDelete.Click += toolStripButtonDelete_Click;
             // 
             // toolStripSeparator
             // 
             toolStripSeparator.Name = "toolStripSeparator";
-            toolStripSeparator.Size = new Size(6, 40);
+            toolStripSeparator.Size = new Size(6, 38);
             // 
             // toolStripButtonRefresh
             // 
             toolStripButtonRefresh.Image = Properties.Resources.refresh;
             toolStripButtonRefresh.ImageTransparentColor = Color.Magenta;
             toolStripButtonRefresh.Name = "toolStripButtonRefresh";
-            toolStripButtonRefresh.Size = new Size(66, 37);
+            toolStripButtonRefresh.Size = new Size(66, 35);
             toolStripButtonRefresh.Text = "Refresh";
             toolStripButtonRefresh.ToolTipText = "Refresh";
             toolStripButtonRefresh.Click += toolStripButtonRefresh_Click;
             // 
             // panelFilters
             // 
-            panelFilters.BackColor = Color.White;
+            panelFilters.BackColor = Color.AliceBlue;
             panelFilters.Controls.Add(tableLayoutPanelFilters);
             panelFilters.Dock = DockStyle.Fill;
             panelFilters.Location = new Point(3, 43);
@@ -197,6 +206,7 @@
             // comboBoxCategory
             // 
             comboBoxCategory.Dock = DockStyle.Fill;
+            comboBoxCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxCategory.FormattingEnabled = true;
             comboBoxCategory.Location = new Point(470, 34);
             comboBoxCategory.Name = "comboBoxCategory";
@@ -206,53 +216,90 @@
             // 
             // dataGridViewBooks
             // 
+            dataGridViewBooks.AllowUserToAddRows = false;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(240, 247, 255);
+            dataGridViewBooks.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             dataGridViewBooks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewBooks.BackgroundColor = Color.White;
+            dataGridViewBooks.BorderStyle = BorderStyle.None;
+            dataGridViewBooks.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewBooks.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = SystemColors.Control;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle2.ForeColor = Color.Black;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Control;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.Control;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+            dataGridViewBooks.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             dataGridViewBooks.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewBooks.Columns.AddRange(new DataGridViewColumn[] { Id, Title, Author, Category, Quantity, PublishedDate });
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = SystemColors.Control;
+            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle3.ForeColor = Color.Black;
+            dataGridViewCellStyle3.SelectionBackColor = Color.RoyalBlue;
+            dataGridViewCellStyle3.SelectionForeColor = Color.White;
+            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.False;
+            dataGridViewBooks.DefaultCellStyle = dataGridViewCellStyle3;
             dataGridViewBooks.Dock = DockStyle.Fill;
+            dataGridViewBooks.EnableHeadersVisualStyles = false;
+            dataGridViewBooks.GridColor = Color.Gainsboro;
             dataGridViewBooks.Location = new Point(3, 112);
             dataGridViewBooks.MultiSelect = false;
             dataGridViewBooks.Name = "dataGridViewBooks";
             dataGridViewBooks.ReadOnly = true;
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = SystemColors.Control;
+            dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle4.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = SystemColors.Control;
+            dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = DataGridViewTriState.True;
+            dataGridViewBooks.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             dataGridViewBooks.RowHeadersVisible = false;
             dataGridViewBooks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridViewBooks.Size = new Size(668, 315);
             dataGridViewBooks.TabIndex = 2;
-            dataGridViewBooks.CellContentClick += dataGridViewBooks_CellContentClick;
             // 
             // Id
             // 
+            Id.DataPropertyName = "Id";
             Id.HeaderText = "Id";
             Id.Name = "Id";
             Id.ReadOnly = true;
             // 
             // Title
             // 
+            Title.DataPropertyName = "Title";
             Title.HeaderText = "Title";
             Title.Name = "Title";
             Title.ReadOnly = true;
             // 
             // Author
             // 
+            Author.DataPropertyName = "Author";
             Author.HeaderText = "Author";
             Author.Name = "Author";
             Author.ReadOnly = true;
             // 
             // Category
             // 
+            Category.DataPropertyName = "Category";
             Category.HeaderText = "Category";
             Category.Name = "Category";
             Category.ReadOnly = true;
             // 
             // Quantity
             // 
+            Quantity.DataPropertyName = "Quantity";
             Quantity.HeaderText = "Quantity";
             Quantity.Name = "Quantity";
             Quantity.ReadOnly = true;
             // 
             // PublishedDate
             // 
+            PublishedDate.DataPropertyName = "PublishedDate";
             PublishedDate.HeaderText = "PublishedDate";
             PublishedDate.Name = "PublishedDate";
             PublishedDate.ReadOnly = true;
@@ -261,6 +308,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
             Controls.Add(tableLayoutPanel);
             Name = "BookView";
             Size = new Size(674, 430);
@@ -290,13 +338,13 @@
         private TextBox textBoxSearch;
         private ComboBox comboBoxCategory;
         private DataGridView dataGridViewBooks;
+        private ToolStripSeparator toolStripSeparator;
+        private ToolStripButton toolStripButtonRefresh;
         private DataGridViewTextBoxColumn Id;
         private DataGridViewTextBoxColumn Title;
         private DataGridViewTextBoxColumn Author;
         private DataGridViewTextBoxColumn Category;
         private DataGridViewTextBoxColumn Quantity;
         private DataGridViewTextBoxColumn PublishedDate;
-        private ToolStripSeparator toolStripSeparator;
-        private ToolStripButton toolStripButtonRefresh;
     }
 }

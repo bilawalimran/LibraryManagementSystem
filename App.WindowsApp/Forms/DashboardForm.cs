@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using App.WindowsApp.Views;
 
@@ -47,11 +42,6 @@ namespace App.WindowsApp.Forms
         private void buttonReservations_Click(object sender, EventArgs e)
         {
             ShowView(new ReservationView());
-        }
-
-        private void pictureBoxLogo_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

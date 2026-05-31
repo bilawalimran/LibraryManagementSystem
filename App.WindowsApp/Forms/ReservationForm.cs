@@ -22,11 +22,6 @@ namespace App.WindowsApp.Forms
         {
         }
 
-        public ReservationForm(Reservation? reservation, ReservationFormModeEnum formMode)
-            : this(formMode, reservation, new ReservationService(), new BookService(), new MemberService())
-        {
-        }
-
         public ReservationForm(
             ReservationFormModeEnum mode,
             Reservation? reservation,
@@ -49,9 +44,7 @@ namespace App.WindowsApp.Forms
 
         private void LoadSelections()
         {
-            comboBoxBooks.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBoxMembers.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBoxStatus.DropDownStyle = ComboBoxStyle.DropDownList;
+            
 
             comboBoxBooks.DataSource = _bookService.GetAllBooks();
             comboBoxBooks.DisplayMember = "Title";

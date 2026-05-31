@@ -18,11 +18,6 @@ namespace App.WindowsApp.Forms
         {
         }
 
-        public MemberForm(Member? member, MemberFormModeEnum formMode = MemberFormModeEnum.Add)
-            : this(formMode, member, new MemberService())
-        {
-        }
-
         public MemberForm(MemberFormModeEnum mode, Member? member, IMemberService service)
         {
             InitializeComponent();

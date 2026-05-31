@@ -19,11 +19,6 @@ namespace App.WindowsApp.Forms
         {
         }
 
-        public BookForm(Book? book, BookFormModeEnum formMode = BookFormModeEnum.Add)
-            : this(formMode, book, new BookService())
-        {
-        }
-
         public BookForm(BookFormModeEnum mode, Book? book, IBookService service)
         {
             InitializeComponent();
@@ -39,10 +34,9 @@ namespace App.WindowsApp.Forms
 
         private void LoadCategories()
         {
-            comboBoxCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxCategory.DataSource = Enum.GetValues(typeof(BookCategory));
             numericUpDownQuantity.Minimum = 0;
-            numericUpDownQuantity.Maximum = 100000;
+            numericUpDownQuantity.Maximum = 1000;
         }
 
         private void LoadInitialData()

@@ -21,11 +21,6 @@ namespace App.WindowsApp.Forms
         {
         }
 
-        public IssueForm(IssueRecord? issue, IssueFormModeEnum formMode)
-            : this(formMode, issue, new IssueService(), new BookService(), new MemberService())
-        {
-        }
-
         public IssueForm(
             IssueFormModeEnum mode,
             IssueRecord? issue,
@@ -48,8 +43,7 @@ namespace App.WindowsApp.Forms
 
         private void LoadSelections()
         {
-            comboBoxBooks.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBoxMembers.DropDownStyle = ComboBoxStyle.DropDownList;
+            
 
             comboBoxBooks.DataSource = _bookService.GetAllBooks();
             comboBoxBooks.DisplayMember = "Title";
@@ -200,11 +194,6 @@ namespace App.WindowsApp.Forms
         {
             DialogResult = DialogResult.Cancel;
             Close();
-        }
-
-        private void comboBoxBooks_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

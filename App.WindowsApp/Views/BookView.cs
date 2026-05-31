@@ -26,65 +26,13 @@ namespace App.WindowsApp.Views
         {
             service = _service;
             InitializeComponent();
-            ConfigureGridBinding();
-            ApplyStyles();
-            LoadCategoryFilter();
-            RefreshGrid();
-        }
-
-        private void ConfigureGridBinding()
-        {
-            dataGridViewBooks.AutoGenerateColumns = false;
-            Id.DataPropertyName = nameof(Book.Id);
-            Title.DataPropertyName = nameof(Book.Title);
-            Author.DataPropertyName = nameof(Book.Author);
-            Category.DataPropertyName = nameof(Book.Category);
-            Quantity.DataPropertyName = nameof(Book.Quantity);
-            PublishedDate.DataPropertyName = nameof(Book.PublishedDate);
-            PublishedDate.DefaultCellStyle.Format = "d";
+            CategoryFilter();
             dataGridViewBooks.DataSource = _dgvBindingSource;
         }
 
-        private void ApplyStyles()
+        
+        private void CategoryFilter()
         {
-            Color accentColor = Color.RoyalBlue;
-
-            BackColor = Color.White;
-            panelFilters.BackColor = Color.AliceBlue;
-            panelFilters.Padding = new Padding(8);
-
-            toolStripBooks.BackColor = Color.WhiteSmoke;
-            toolStripBooks.GripStyle = ToolStripGripStyle.Hidden;
-            toolStripBooks.Padding = new Padding(6, 4, 6, 4);
-            toolStripBooks.RenderMode = ToolStripRenderMode.System;
-
-            foreach (ToolStripItem item in toolStripBooks.Items)
-            {
-                item.Margin = new Padding(2, 0, 2, 0);
-                item.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
-            }
-
-            dataGridViewBooks.BackgroundColor = Color.White;
-            dataGridViewBooks.BorderStyle = BorderStyle.None;
-            dataGridViewBooks.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dataGridViewBooks.GridColor = Color.Gainsboro;
-            dataGridViewBooks.EnableHeadersVisualStyles = false;
-            dataGridViewBooks.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewBooks.ColumnHeadersDefaultCellStyle.BackColor = accentColor;
-            dataGridViewBooks.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dataGridViewBooks.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            dataGridViewBooks.ColumnHeadersDefaultCellStyle.SelectionBackColor = accentColor;
-            dataGridViewBooks.ColumnHeadersHeight = 34;
-            dataGridViewBooks.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
-            dataGridViewBooks.DefaultCellStyle.SelectionBackColor = ControlPaint.Light(accentColor, 0.65F);
-            dataGridViewBooks.DefaultCellStyle.SelectionForeColor = Color.Black;
-            dataGridViewBooks.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(240, 247, 255);
-            dataGridViewBooks.RowTemplate.Height = 28;
-        }
-
-        private void LoadCategoryFilter()
-        {
-            comboBoxCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxCategory.Items.Clear();
             comboBoxCategory.Items.Add(AllCategories);
 
@@ -98,14 +46,8 @@ namespace App.WindowsApp.Views
 
         private void RefreshGrid()
         {
-            try
-            {
-                _dgvBindingSource.DataSource = GetFilteredBooks().ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Unable to load books", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            _dgvBindingSource.DataSource = GetFilteredBooks().ToList();
+
         }
 
         private IEnumerable<Book> GetFilteredBooks()
@@ -214,11 +156,6 @@ namespace App.WindowsApp.Views
         private void toolStripButtonRefresh_Click(object sender, EventArgs e)
         {
             RefreshGrid();
-        }
-
-        private void dataGridViewBooks_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
     }
 }

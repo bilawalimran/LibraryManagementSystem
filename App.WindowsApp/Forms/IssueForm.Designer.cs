@@ -188,16 +188,17 @@
             // comboBoxBooks
             // 
             comboBoxBooks.Dock = DockStyle.Fill;
+            comboBoxBooks.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxBooks.FormattingEnabled = true;
             comboBoxBooks.Location = new Point(128, 3);
             comboBoxBooks.Name = "comboBoxBooks";
             comboBoxBooks.Size = new Size(494, 23);
             comboBoxBooks.TabIndex = 12;
-            comboBoxBooks.SelectedIndexChanged += comboBoxBooks_SelectedIndexChanged;
             // 
             // comboBoxMembers
             // 
             comboBoxMembers.Dock = DockStyle.Fill;
+            comboBoxMembers.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxMembers.FormattingEnabled = true;
             comboBoxMembers.Location = new Point(128, 53);
             comboBoxMembers.Name = "comboBoxMembers";

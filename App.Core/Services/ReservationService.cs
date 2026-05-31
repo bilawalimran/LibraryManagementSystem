@@ -77,7 +77,12 @@ namespace App.Core.Services
             using var conn = GetConnection();
             conn.Open();
 
-            string query = "SELECT * FROM Reservations";
+            string query = @"SELECT r.*,
+                                    b.Title AS BookName,
+                                    m.Name AS MemberName
+                             FROM Reservations r
+                             LEFT JOIN Books b ON r.BookId = b.Id
+                             LEFT JOIN Members m ON r.MemberId = m.Id";
 
             using var cmd = new SqlCommand(query, conn);
             using var reader = cmd.ExecuteReader();
@@ -95,7 +100,13 @@ namespace App.Core.Services
             using var conn = GetConnection();
             conn.Open();
 
-            string query = "SELECT * FROM Reservations WHERE Id=@Id";
+            string query = @"SELECT r.*,
+                                    b.Title AS BookName,
+                                    m.Name AS MemberName
+                             FROM Reservations r
+                             LEFT JOIN Books b ON r.BookId = b.Id
+                             LEFT JOIN Members m ON r.MemberId = m.Id
+                             WHERE r.Id=@Id";
 
             using var cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Id", id);
@@ -129,6 +140,8 @@ namespace App.Core.Services
                 Id = reader["Id"].ToString() ?? string.Empty,
                 BookId = reader["BookId"].ToString() ?? string.Empty,
                 MemberId = reader["MemberId"].ToString() ?? string.Empty,
+                BookName = reader["BookName"].ToString() ?? string.Empty,
+                MemberName = reader["MemberName"].ToString() ?? string.Empty,
                 ReservationDate = (DateTime)reader["ReservationDate"],
                 ExpiryDate = reader["ExpiryDate"] == DBNull.Value
                     ? null

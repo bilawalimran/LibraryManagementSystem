@@ -28,92 +28,26 @@ namespace App.WindowsApp.Views
             memberService = _memberService;
             InitializeComponent();
             ConfigureGridBinding();
-            ApplyStyles();
             RefreshGrid();
         }
 
         private void ConfigureGridBinding()
         {
             dataGridViewIssues.AutoGenerateColumns = false;
-            Id.DataPropertyName = nameof(IssueGridRow.Id);
-            Book.DataPropertyName = nameof(IssueGridRow.Book);
-            Member.DataPropertyName = nameof(IssueGridRow.Member);
-            IssueDate.DataPropertyName = nameof(IssueGridRow.IssueDate);
-            ReturnDate.DataPropertyName = nameof(IssueGridRow.ReturnDate);
-            IssueDate.DefaultCellStyle.Format = "d";
-            ReturnDate.DefaultCellStyle.Format = "d";
+            Id.DataPropertyName = nameof(IssueRecord.Id);
+            Book.DataPropertyName = nameof(IssueRecord.BookName);
+            Member.DataPropertyName = nameof(IssueRecord.MemberName);
+            IssueDate.DataPropertyName = nameof(IssueRecord.IssueDate);
+            ReturnDate.DataPropertyName = nameof(IssueRecord.ReturnDate);
             dataGridViewIssues.DataSource = _dgvBindingSource;
-        }
-
-        private void ApplyStyles()
-        {
-            Color accentColor = Color.Goldenrod;
-
-            BackColor = Color.White;
-            flowLayoutPanel.BackColor = Color.LemonChiffon;
-            flowLayoutPanel.Padding = new Padding(8);
-
-            toolStripIssues.BackColor = Color.WhiteSmoke;
-            toolStripIssues.GripStyle = ToolStripGripStyle.Hidden;
-            toolStripIssues.Padding = new Padding(6, 4, 6, 4);
-            toolStripIssues.RenderMode = ToolStripRenderMode.System;
-
-            foreach (ToolStripItem item in toolStripIssues.Items)
-            {
-                item.Margin = new Padding(2, 0, 2, 0);
-                item.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
-            }
-
-            dataGridViewIssues.BackgroundColor = Color.White;
-            dataGridViewIssues.BorderStyle = BorderStyle.None;
-            dataGridViewIssues.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dataGridViewIssues.GridColor = Color.Gainsboro;
-            dataGridViewIssues.EnableHeadersVisualStyles = false;
-            dataGridViewIssues.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dataGridViewIssues.ColumnHeadersDefaultCellStyle.BackColor = accentColor;
-            dataGridViewIssues.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dataGridViewIssues.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            dataGridViewIssues.ColumnHeadersDefaultCellStyle.SelectionBackColor = accentColor;
-            dataGridViewIssues.ColumnHeadersHeight = 34;
-            dataGridViewIssues.DefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
-            dataGridViewIssues.DefaultCellStyle.SelectionBackColor = ControlPaint.Light(accentColor, 0.65F);
-            dataGridViewIssues.DefaultCellStyle.SelectionForeColor = Color.Black;
-            dataGridViewIssues.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(255, 250, 220);
-            dataGridViewIssues.RowTemplate.Height = 28;
         }
 
         private void RefreshGrid()
         {
-            try
-            {
-                _dgvBindingSource.DataSource = GetIssueRows().ToList();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Unable to load issues", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            _dgvBindingSource.DataSource = GetFilteredIssues().ToList();
         }
 
-        private IEnumerable<IssueGridRow> GetIssueRows()
-        {
-            var books = bookService.GetAllBooks().ToDictionary(book => book.Id, book => book.Title);
-            var members = memberService.GetAllMembers().ToDictionary(member => member.Id, member => member.Name);
-
-            return GetFilteredIssues(books, members)
-                .Select(issue => new IssueGridRow
-                {
-                    Id = issue.Id,
-                    Book = GetBookName(books, issue.BookId),
-                    Member = GetMemberName(members, issue.MemberId),
-                    IssueDate = issue.IssueDate,
-                    ReturnDate = issue.ReturnDate,
-                    Issue = issue
-                });
-        }
-
-        private IEnumerable<IssueRecord> GetFilteredIssues(
-            Dictionary<string, string> books,
-            Dictionary<string, string> members)
+        private IEnumerable<IssueRecord> GetFilteredIssues()
         {
             IEnumerable<IssueRecord> issues = service.GetAllIssues();
             string keyword = textBoxSearch.Text.Trim();
@@ -125,30 +59,13 @@ namespace App.WindowsApp.Views
 
             return issues.Where(issue =>
                 issue.Id.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                issue.BookId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                issue.MemberId.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                GetBookName(books, issue.BookId).Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                GetMemberName(members, issue.MemberId).Contains(keyword, StringComparison.OrdinalIgnoreCase));
-        }
-
-        private static string GetBookName(Dictionary<string, string> books, string bookId)
-        {
-            return books.TryGetValue(bookId, out string? title) ? title : $"Book #{bookId}";
-        }
-
-        private static string GetMemberName(Dictionary<string, string> members, string memberId)
-        {
-            return members.TryGetValue(memberId, out string? name) ? name : $"Member #{memberId}";
-        }
-
-        private IssueGridRow? GetSelectedIssueRow()
-        {
-            return _dgvBindingSource.Current as IssueGridRow;
+                issue.BookName.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                issue.MemberName.Contains(keyword, StringComparison.OrdinalIgnoreCase));
         }
 
         private IssueRecord? GetSelectedIssue()
         {
-            return GetSelectedIssueRow()?.Issue;
+            return _dgvBindingSource.Current as IssueRecord;
         }
 
         private void ShowIssueForm(IssueFormModeEnum mode, IssueRecord? issue = null)
@@ -192,7 +109,7 @@ namespace App.WindowsApp.Views
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)
         {
-            IssueGridRow? selectedIssue = GetSelectedIssueRow();
+            IssueRecord? selectedIssue = GetSelectedIssue();
             if (selectedIssue == null)
             {
                 MessageBox.Show("Please select an issue record to delete.", "Delete Issue", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -220,16 +137,6 @@ namespace App.WindowsApp.Views
         private void textBoxSearch_TextChanged(object sender, EventArgs e)
         {
             RefreshGrid();
-        }
-
-        private class IssueGridRow
-        {
-            public string Id { get; set; } = string.Empty;
-            public string Book { get; set; } = string.Empty;
-            public string Member { get; set; } = string.Empty;
-            public DateTime IssueDate { get; set; }
-            public DateTime? ReturnDate { get; set; }
-            public IssueRecord Issue { get; set; } = null!;
         }
     }
 }

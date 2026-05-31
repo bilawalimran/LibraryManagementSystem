@@ -82,7 +82,12 @@ namespace App.Core.Services
             using var conn = GetConnection();
             conn.Open();
 
-            string query = "SELECT * FROM Issues";
+            string query = @"SELECT i.*,
+                                    b.Title AS BookName,
+                                    m.Name AS MemberName
+                             FROM Issues i
+                             LEFT JOIN Books b ON i.BookId = b.Id
+                             LEFT JOIN Members m ON i.MemberId = m.Id";
 
             using var cmd = new SqlCommand(query, conn);
             using var reader = cmd.ExecuteReader();
@@ -94,6 +99,8 @@ namespace App.Core.Services
                     Id = reader["Id"].ToString() ?? string.Empty,
                     BookId = reader["BookId"].ToString() ?? string.Empty,
                     MemberId = reader["MemberId"].ToString() ?? string.Empty,
+                    BookName = reader["BookName"].ToString() ?? string.Empty,
+                    MemberName = reader["MemberName"].ToString() ?? string.Empty,
                     IssueDate = (DateTime)reader["IssueDate"],
                     ReturnDate = reader["ReturnDate"] == DBNull.Value
                         ? null
