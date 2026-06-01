@@ -1,8 +1,6 @@
 using App.Core.Interfaces;
 using App.Core.Models;
 using App.Core.Services;
-using System;
-using System.Windows.Forms;
 
 namespace App.WindowsApp.Forms
 {
@@ -36,15 +34,6 @@ namespace App.WindowsApp.Forms
             _bookService = bookService;
             _memberService = memberService;
 
-            LoadSelections();
-            LoadInitialData();
-            ApplyMode();
-        }
-
-        private void LoadSelections()
-        {
-            
-
             comboBoxBooks.DataSource = _bookService.GetAllBooks();
             comboBoxBooks.DisplayMember = "Title";
             comboBoxBooks.ValueMember = "Id";
@@ -52,41 +41,28 @@ namespace App.WindowsApp.Forms
             comboBoxMembers.DataSource = _memberService.GetAllMembers();
             comboBoxMembers.DisplayMember = "Name";
             comboBoxMembers.ValueMember = "Id";
-        }
 
-        private void LoadInitialData()
-        {
-            if (_issue != null)
+            if (issue != null)
             {
-                LoadIssue(_issue);
-                return;
+                Issue = issue;
+                textBoxId.Text = issue.Id;
+                comboBoxBooks.SelectedValue = issue.BookId;
+                comboBoxMembers.SelectedValue = issue.MemberId;
+                dateTimePickerIssueDate.Value = issue.IssueDate;
+                checkBoxReturned.Checked = issue.ReturnDate.HasValue || mode == IssueFormModeEnum.Edit;
+                dateTimePickerReturnDate.Value = issue.ReturnDate ?? DateTime.Now;
             }
-
-            if (_mode == IssueFormModeEnum.Add)
+            else if (mode == IssueFormModeEnum.Add)
             {
                 textBoxId.Text = new IssueRecord().Id;
                 dateTimePickerIssueDate.Value = DateTime.Now;
                 checkBoxReturned.Checked = false;
             }
-        }
 
-        private void LoadIssue(IssueRecord issue)
-        {
-            Issue = issue;
-            textBoxId.Text = issue.Id;
-            comboBoxBooks.SelectedValue = issue.BookId;
-            comboBoxMembers.SelectedValue = issue.MemberId;
-            dateTimePickerIssueDate.Value = issue.IssueDate;
-            checkBoxReturned.Checked = issue.ReturnDate.HasValue || _mode == IssueFormModeEnum.Edit;
-            dateTimePickerReturnDate.Value = issue.ReturnDate ?? DateTime.Now;
-        }
+            bool isEditMode = mode == IssueFormModeEnum.Edit;
+            bool isViewMode = mode == IssueFormModeEnum.View;
 
-        private void ApplyMode()
-        {
-            bool isEditMode = _mode == IssueFormModeEnum.Edit;
-            bool isViewMode = _mode == IssueFormModeEnum.View;
-
-            labelIssueDetails.Text = _mode switch
+            labelIssueDetails.Text = mode switch
             {
                 IssueFormModeEnum.Add => "Issue Details",
                 IssueFormModeEnum.Edit => "Return Details",
@@ -94,10 +70,10 @@ namespace App.WindowsApp.Forms
                 _ => "Issue Details"
             };
 
-            comboBoxBooks.Enabled = _mode == IssueFormModeEnum.Add;
-            comboBoxMembers.Enabled = _mode == IssueFormModeEnum.Add;
-            dateTimePickerIssueDate.Enabled = _mode == IssueFormModeEnum.Add;
-            checkBoxReturned.Enabled = _mode == IssueFormModeEnum.Add;
+            comboBoxBooks.Enabled = mode == IssueFormModeEnum.Add;
+            comboBoxMembers.Enabled = mode == IssueFormModeEnum.Add;
+            dateTimePickerIssueDate.Enabled = mode == IssueFormModeEnum.Add;
+            checkBoxReturned.Enabled = mode == IssueFormModeEnum.Add;
             checkBoxReturned.Checked = isEditMode || checkBoxReturned.Checked;
             dateTimePickerReturnDate.Enabled = !isViewMode && checkBoxReturned.Checked;
             buttonSave.Visible = !isViewMode;
@@ -123,71 +99,48 @@ namespace App.WindowsApp.Forms
                 return;
             }
 
-            if (!ValidateForm(out DateTime? returnDate))
-            {
-                return;
-            }
-
-            SaveIssue(returnDate);
-            DialogResult = DialogResult.OK;
-            Close();
-        }
-
-        private bool ValidateForm(out DateTime? returnDate)
-        {
-            returnDate = checkBoxReturned.Checked ? dateTimePickerReturnDate.Value : null;
+            DateTime? returnDate = checkBoxReturned.Checked ? dateTimePickerReturnDate.Value : null;
 
             if (comboBoxBooks.SelectedValue == null)
             {
                 MessageBox.Show("Please select a book.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
+                return;
             }
 
             if (comboBoxMembers.SelectedValue == null)
             {
                 MessageBox.Show("Please select a member.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
+                return;
             }
 
             if (returnDate.HasValue && returnDate.Value.Date < dateTimePickerIssueDate.Value.Date)
             {
                 MessageBox.Show("Return date cannot be before issue date.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-
-            return true;
-        }
-
-        private void SaveIssue(DateTime? returnDate)
-        {
-            if (_mode == IssueFormModeEnum.Add)
-            {
-                IssueRecord newIssue = ReadIssueFromForm(new IssueRecord(), returnDate);
-                _issueService.IssueBook(newIssue);
-                Issue = newIssue;
                 return;
             }
 
-            if (_mode == IssueFormModeEnum.Edit && _issue != null)
+            if (_mode == IssueFormModeEnum.Add)
+            {
+                IssueRecord newIssue = new IssueRecord();
+                newIssue.Id = string.IsNullOrWhiteSpace(textBoxId.Text) ? newIssue.Id : textBoxId.Text.Trim();
+                newIssue.BookId = Convert.ToString(comboBoxBooks.SelectedValue) ?? string.Empty;
+                newIssue.MemberId = Convert.ToString(comboBoxMembers.SelectedValue) ?? string.Empty;
+                newIssue.IssueDate = dateTimePickerIssueDate.Value;
+                newIssue.ReturnDate = returnDate;
+
+                _issueService.IssueBook(newIssue);
+                Issue = newIssue;
+            }
+            else if (_mode == IssueFormModeEnum.Edit && _issue != null)
             {
                 DateTime selectedReturnDate = returnDate ?? DateTime.Now;
                 _issue.ReturnDate = selectedReturnDate;
                 _issueService.ReturnBook(_issue.Id, selectedReturnDate);
                 Issue = _issue;
             }
-        }
 
-        private IssueRecord ReadIssueFromForm(IssueRecord issue, DateTime? returnDate)
-        {
-            issue.Id = string.IsNullOrWhiteSpace(textBoxId.Text)
-                ? issue.Id
-                : textBoxId.Text.Trim();
-            issue.BookId = Convert.ToString(comboBoxBooks.SelectedValue) ?? string.Empty;
-            issue.MemberId = Convert.ToString(comboBoxMembers.SelectedValue) ?? string.Empty;
-            issue.IssueDate = dateTimePickerIssueDate.Value;
-            issue.ReturnDate = returnDate;
-
-            return issue;
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)

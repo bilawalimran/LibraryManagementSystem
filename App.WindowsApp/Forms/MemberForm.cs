@@ -1,8 +1,6 @@
 using App.Core.Interfaces;
 using App.Core.Models;
 using App.Core.Services;
-using System;
-using System.Windows.Forms;
 
 namespace App.WindowsApp.Forms
 {
@@ -26,39 +24,23 @@ namespace App.WindowsApp.Forms
             _member = member;
             _service = service;
 
-            LoadInitialData();
-            ApplyMode();
-        }
-
-        private void LoadInitialData()
-        {
-            if (_member != null)
+            if (member != null)
             {
-                LoadMember(_member);
-                return;
+                Member = member;
+                textBoxMemberId.Text = member.Id;
+                textBoxTitle.Text = member.Name;
+                textBoxAuthor.Text = member.Email;
+                textBoxPhone.Text = member.Phone;
+                textBoxAddress.Text = member.Address;
             }
-
-            if (_mode == MemberFormModeEnum.Add)
+            else if (mode == MemberFormModeEnum.Add)
             {
                 textBoxMemberId.Text = new Member().Id;
             }
-        }
 
-        private void LoadMember(Member member)
-        {
-            Member = member;
-            textBoxMemberId.Text = member.Id;
-            textBoxTitle.Text = member.Name;
-            textBoxAuthor.Text = member.Email;
-            textBoxPhone.Text = member.Phone;
-            textBoxAddress.Text = member.Address;
-        }
+            bool isViewMode = mode == MemberFormModeEnum.View;
 
-        private void ApplyMode()
-        {
-            bool isViewMode = _mode == MemberFormModeEnum.View;
-
-            labelMemberDetails.Text = _mode switch
+            labelMemberDetails.Text = mode switch
             {
                 MemberFormModeEnum.Add => "Add Member",
                 MemberFormModeEnum.Edit => "Edit Member",
@@ -71,7 +53,7 @@ namespace App.WindowsApp.Forms
             textBoxPhone.ReadOnly = isViewMode;
             textBoxAddress.ReadOnly = isViewMode;
             buttonSave.Visible = !isViewMode;
-            buttonSave.Text = _mode == MemberFormModeEnum.Edit ? "Update" : "Save";
+            buttonSave.Text = mode == MemberFormModeEnum.Edit ? "Update" : "Save";
             buttonCancel.Text = isViewMode ? "Close" : "Cancel";
         }
 
@@ -83,55 +65,38 @@ namespace App.WindowsApp.Forms
                 return;
             }
 
-            if (!ValidateForm())
+            if (string.IsNullOrWhiteSpace(textBoxTitle.Text))
             {
+                MessageBox.Show("Please enter member name.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            SaveMember();
-            DialogResult = DialogResult.OK;
-            Close();
-        }
-
-        private bool ValidateForm()
-        {
-            if (!string.IsNullOrWhiteSpace(textBoxTitle.Text))
-            {
-                return true;
-            }
-
-            MessageBox.Show("Please enter member name.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return false;
-        }
-
-        private void SaveMember()
-        {
             if (_mode == MemberFormModeEnum.Add)
             {
-                Member newMember = ReadMemberFromForm(new Member());
+                Member newMember = new Member();
+                newMember.Id = string.IsNullOrWhiteSpace(textBoxMemberId.Text) ? newMember.Id : textBoxMemberId.Text.Trim();
+                newMember.Name = textBoxTitle.Text.Trim();
+                newMember.Email = textBoxAuthor.Text.Trim();
+                newMember.Phone = textBoxPhone.Text.Trim();
+                newMember.Address = textBoxAddress.Text.Trim();
+
                 _service.AddMember(newMember);
                 Member = newMember;
-                return;
             }
-
-            if (_mode == MemberFormModeEnum.Edit && _member != null)
+            else if (_mode == MemberFormModeEnum.Edit && _member != null)
             {
-                Member = ReadMemberFromForm(_member);
+                _member.Id = string.IsNullOrWhiteSpace(textBoxMemberId.Text) ? _member.Id : textBoxMemberId.Text.Trim();
+                _member.Name = textBoxTitle.Text.Trim();
+                _member.Email = textBoxAuthor.Text.Trim();
+                _member.Phone = textBoxPhone.Text.Trim();
+                _member.Address = textBoxAddress.Text.Trim();
+
                 _service.UpdateMember(_member);
+                Member = _member;
             }
-        }
 
-        private Member ReadMemberFromForm(Member member)
-        {
-            member.Id = string.IsNullOrWhiteSpace(textBoxMemberId.Text)
-                ? member.Id
-                : textBoxMemberId.Text.Trim();
-            member.Name = textBoxTitle.Text.Trim();
-            member.Email = textBoxAuthor.Text.Trim();
-            member.Phone = textBoxPhone.Text.Trim();
-            member.Address = textBoxAddress.Text.Trim();
-
-            return member;
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)

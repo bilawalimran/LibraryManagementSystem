@@ -2,8 +2,6 @@ using App.Core.Enums;
 using App.Core.Interfaces;
 using App.Core.Models;
 using App.Core.Services;
-using System;
-using System.Windows.Forms;
 
 namespace App.WindowsApp.Forms
 {
@@ -37,15 +35,6 @@ namespace App.WindowsApp.Forms
             _bookService = bookService;
             _memberService = memberService;
 
-            LoadSelections();
-            LoadInitialData();
-            ApplyMode();
-        }
-
-        private void LoadSelections()
-        {
-            
-
             comboBoxBooks.DataSource = _bookService.GetAllBooks();
             comboBoxBooks.DisplayMember = "Title";
             comboBoxBooks.ValueMember = "Id";
@@ -55,17 +44,19 @@ namespace App.WindowsApp.Forms
             comboBoxMembers.ValueMember = "Id";
 
             comboBoxStatus.DataSource = Enum.GetValues(typeof(ReservationStatus));
-        }
 
-        private void LoadInitialData()
-        {
-            if (_reservation != null)
+            if (reservation != null)
             {
-                LoadReservation(_reservation);
-                return;
+                Reservation = reservation;
+                textBoxReservationId.Text = reservation.Id;
+                comboBoxBooks.SelectedValue = reservation.BookId;
+                comboBoxMembers.SelectedValue = reservation.MemberId;
+                dateTimePickerReservationDate.Value = reservation.ReservationDate;
+                checkBoxHasExpiry.Checked = reservation.ExpiryDate.HasValue;
+                dateTimePickerExpiryDate.Value = reservation.ExpiryDate ?? DateTime.Today.AddDays(7);
+                comboBoxStatus.SelectedItem = reservation.Status;
             }
-
-            if (_mode == ReservationFormModeEnum.Add)
+            else if (mode == ReservationFormModeEnum.Add)
             {
                 textBoxReservationId.Text = new Reservation().Id;
                 dateTimePickerReservationDate.Value = DateTime.Today;
@@ -73,25 +64,10 @@ namespace App.WindowsApp.Forms
                 dateTimePickerExpiryDate.Value = DateTime.Today.AddDays(7);
                 comboBoxStatus.SelectedItem = ReservationStatus.Pending;
             }
-        }
 
-        private void LoadReservation(Reservation reservation)
-        {
-            Reservation = reservation;
-            textBoxReservationId.Text = reservation.Id;
-            comboBoxBooks.SelectedValue = reservation.BookId;
-            comboBoxMembers.SelectedValue = reservation.MemberId;
-            dateTimePickerReservationDate.Value = reservation.ReservationDate;
-            checkBoxHasExpiry.Checked = reservation.ExpiryDate.HasValue;
-            dateTimePickerExpiryDate.Value = reservation.ExpiryDate ?? DateTime.Today.AddDays(7);
-            comboBoxStatus.SelectedItem = reservation.Status;
-        }
+            bool isViewMode = mode == ReservationFormModeEnum.View;
 
-        private void ApplyMode()
-        {
-            bool isViewMode = _mode == ReservationFormModeEnum.View;
-
-            labelReservationDetails.Text = _mode switch
+            labelReservationDetails.Text = mode switch
             {
                 ReservationFormModeEnum.Add => "Add Reservation",
                 ReservationFormModeEnum.Edit => "Edit Reservation",
@@ -106,7 +82,7 @@ namespace App.WindowsApp.Forms
             dateTimePickerExpiryDate.Enabled = !isViewMode && checkBoxHasExpiry.Checked;
             comboBoxStatus.Enabled = !isViewMode;
             buttonSave.Visible = !isViewMode;
-            buttonSave.Text = _mode == ReservationFormModeEnum.Edit ? "Update" : "Save";
+            buttonSave.Text = mode == ReservationFormModeEnum.Edit ? "Update" : "Save";
             buttonCancel.Text = isViewMode ? "Close" : "Cancel";
         }
 
@@ -129,81 +105,60 @@ namespace App.WindowsApp.Forms
                 return;
             }
 
-            if (!ValidateForm(out ReservationStatus selectedStatus, out DateTime? expiryDate))
-            {
-                return;
-            }
-
-            SaveReservation(selectedStatus, expiryDate);
-            DialogResult = DialogResult.OK;
-            Close();
-        }
-
-        private bool ValidateForm(out ReservationStatus selectedStatus, out DateTime? expiryDate)
-        {
-            selectedStatus = default;
-            expiryDate = checkBoxHasExpiry.Checked ? dateTimePickerExpiryDate.Value : null;
+            DateTime? expiryDate = checkBoxHasExpiry.Checked ? dateTimePickerExpiryDate.Value : null;
 
             if (comboBoxBooks.SelectedValue == null)
             {
                 MessageBox.Show("Please select a book.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
+                return;
             }
 
             if (comboBoxMembers.SelectedValue == null)
             {
                 MessageBox.Show("Please select a member.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
+                return;
             }
 
-            if (comboBoxStatus.SelectedItem is not ReservationStatus status)
+            if (comboBoxStatus.SelectedItem is not ReservationStatus selectedStatus)
             {
                 MessageBox.Show("Please select a status.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
+                return;
             }
 
             if (expiryDate.HasValue && expiryDate.Value.Date < dateTimePickerReservationDate.Value.Date)
             {
                 MessageBox.Show("Expiry date cannot be before reservation date.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
-
-            selectedStatus = status;
-            return true;
-        }
-
-        private void SaveReservation(ReservationStatus selectedStatus, DateTime? expiryDate)
-        {
-            if (_mode == ReservationFormModeEnum.Add)
-            {
-                Reservation newReservation = ReadReservationFromForm(new Reservation(), selectedStatus, expiryDate);
-                _reservationService.AddReservation(newReservation);
-                Reservation = newReservation;
                 return;
             }
 
-            if (_mode == ReservationFormModeEnum.Edit && _reservation != null)
+            if (_mode == ReservationFormModeEnum.Add)
             {
-                Reservation = ReadReservationFromForm(_reservation, selectedStatus, expiryDate);
-                _reservationService.UpdateReservation(_reservation);
+                Reservation newReservation = new Reservation();
+                newReservation.Id = string.IsNullOrWhiteSpace(textBoxReservationId.Text) ? newReservation.Id : textBoxReservationId.Text.Trim();
+                newReservation.BookId = Convert.ToString(comboBoxBooks.SelectedValue) ?? string.Empty;
+                newReservation.MemberId = Convert.ToString(comboBoxMembers.SelectedValue) ?? string.Empty;
+                newReservation.ReservationDate = dateTimePickerReservationDate.Value;
+                newReservation.ExpiryDate = expiryDate;
+                newReservation.Status = selectedStatus;
+
+                _reservationService.AddReservation(newReservation);
+                Reservation = newReservation;
             }
-        }
+            else if (_mode == ReservationFormModeEnum.Edit && _reservation != null)
+            {
+                _reservation.Id = string.IsNullOrWhiteSpace(textBoxReservationId.Text) ? _reservation.Id : textBoxReservationId.Text.Trim();
+                _reservation.BookId = Convert.ToString(comboBoxBooks.SelectedValue) ?? string.Empty;
+                _reservation.MemberId = Convert.ToString(comboBoxMembers.SelectedValue) ?? string.Empty;
+                _reservation.ReservationDate = dateTimePickerReservationDate.Value;
+                _reservation.ExpiryDate = expiryDate;
+                _reservation.Status = selectedStatus;
 
-        private Reservation ReadReservationFromForm(
-            Reservation reservation,
-            ReservationStatus selectedStatus,
-            DateTime? expiryDate)
-        {
-            reservation.Id = string.IsNullOrWhiteSpace(textBoxReservationId.Text)
-                ? reservation.Id
-                : textBoxReservationId.Text.Trim();
-            reservation.BookId = Convert.ToString(comboBoxBooks.SelectedValue) ?? string.Empty;
-            reservation.MemberId = Convert.ToString(comboBoxMembers.SelectedValue) ?? string.Empty;
-            reservation.ReservationDate = dateTimePickerReservationDate.Value;
-            reservation.ExpiryDate = expiryDate;
-            reservation.Status = selectedStatus;
+                _reservationService.UpdateReservation(_reservation);
+                Reservation = _reservation;
+            }
 
-            return reservation;
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void buttonCancel_Click(object sender, EventArgs e)

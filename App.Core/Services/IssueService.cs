@@ -9,37 +9,27 @@ namespace App.Core.Services
 {
     public class IssueService : IIssueService
     {
-        private static SqlConnection GetConnection()
+        private readonly string _connectionString;
+
+        public IssueService()
         {
-            string? connectionString = ConfigurationManager.ConnectionStrings["LibraryDB"]?.ConnectionString;
-
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new InvalidOperationException("Connection string 'LibraryDB' was not found in App.config.");
-            }
-
-            return new SqlConnection(connectionString);
+            _connectionString = ConfigurationManager.ConnectionStrings["LibraryDB"].ConnectionString;
         }
 
         public void IssueBook(IssueRecord issue)
         {
-            using var conn = GetConnection();
-            conn.Open();
-
-            string query = @"INSERT INTO Issues(Id, BookId, MemberId, IssueDate, ReturnDate)
-                             VALUES(@Id, @BookId, @MemberId, @IssueDate, @ReturnDate)";
-
-            using var cmd = new SqlCommand(query, conn);
-
-            cmd.Parameters.AddWithValue("@Id", issue.Id);
-            cmd.Parameters.AddWithValue("@BookId", issue.BookId);
-            cmd.Parameters.AddWithValue("@MemberId", issue.MemberId);
-            cmd.Parameters.AddWithValue("@IssueDate", issue.IssueDate == default ? DateTime.Now : issue.IssueDate);
-            cmd.Parameters.AddWithValue("@ReturnDate", issue.ReturnDate.HasValue
-                ? issue.ReturnDate.Value
-                : DBNull.Value);
-
-            cmd.ExecuteNonQuery();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string sql = "INSERT INTO Issues(Id, BookId, MemberId, IssueDate, ReturnDate) VALUES (@Id, @BookId, @MemberId, @IssueDate, @ReturnDate)";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Id", issue.Id);
+                cmd.Parameters.AddWithValue("@BookId", issue.BookId);
+                cmd.Parameters.AddWithValue("@MemberId", issue.MemberId);
+                cmd.Parameters.AddWithValue("@IssueDate", issue.IssueDate == default ? DateTime.Now : issue.IssueDate);
+                cmd.Parameters.AddWithValue("@ReturnDate", (object)issue.ReturnDate ?? DBNull.Value);
+                cmd.ExecuteNonQuery();
+            }
         }
 
         public void ReturnBook(string issueId)
@@ -49,66 +39,58 @@ namespace App.Core.Services
 
         public void ReturnBook(string issueId, DateTime returnDate)
         {
-            using var conn = GetConnection();
-            conn.Open();
-
-            string query = "UPDATE Issues SET ReturnDate=@ReturnDate WHERE Id=@Id";
-
-            using var cmd = new SqlCommand(query, conn);
-
-            cmd.Parameters.AddWithValue("@Id", issueId);
-            cmd.Parameters.AddWithValue("@ReturnDate", returnDate);
-
-            cmd.ExecuteNonQuery();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string sql = "UPDATE Issues SET ReturnDate=@ReturnDate WHERE Id=@Id";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Id", issueId);
+                cmd.Parameters.AddWithValue("@ReturnDate", returnDate);
+                cmd.ExecuteNonQuery();
+            }
         }
 
         public void DeleteIssue(string issueId)
         {
-            using var conn = GetConnection();
-            conn.Open();
-
-            string query = "DELETE FROM Issues WHERE Id=@Id";
-
-            using var cmd = new SqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@Id", issueId);
-
-            cmd.ExecuteNonQuery();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("DELETE FROM Issues WHERE Id=@Id", conn);
+                cmd.Parameters.AddWithValue("@Id", issueId);
+                cmd.ExecuteNonQuery();
+            }
         }
 
         public List<IssueRecord> GetAllIssues()
         {
-            var issues = new List<IssueRecord>();
-
-            using var conn = GetConnection();
-            conn.Open();
-
-            string query = @"SELECT i.*,
-                                    b.Title AS BookName,
-                                    m.Name AS MemberName
-                             FROM Issues i
-                             LEFT JOIN Books b ON i.BookId = b.Id
-                             LEFT JOIN Members m ON i.MemberId = m.Id";
-
-            using var cmd = new SqlCommand(query, conn);
-            using var reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            List<IssueRecord> issues = new List<IssueRecord>();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                issues.Add(new IssueRecord
+                conn.Open();
+                string sql = @"SELECT i.*, b.Title AS BookName, m.Name AS MemberName
+                               FROM Issues i
+                               LEFT JOIN Books b ON i.BookId = b.Id
+                               LEFT JOIN Members m ON i.MemberId = m.Id";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    Id = reader["Id"].ToString() ?? string.Empty,
-                    BookId = reader["BookId"].ToString() ?? string.Empty,
-                    MemberId = reader["MemberId"].ToString() ?? string.Empty,
-                    BookName = reader["BookName"].ToString() ?? string.Empty,
-                    MemberName = reader["MemberName"].ToString() ?? string.Empty,
-                    IssueDate = (DateTime)reader["IssueDate"],
-                    ReturnDate = reader["ReturnDate"] == DBNull.Value
-                        ? null
-                        : (DateTime)reader["ReturnDate"]
-                });
+                    while (reader.Read()) issues.Add(ReadIssue(reader));
+                }
             }
-
             return issues;
+        }
+
+        private IssueRecord ReadIssue(SqlDataReader reader)
+        {
+            IssueRecord i = new IssueRecord();
+            i.Id = reader["Id"].ToString() ?? string.Empty;
+            i.BookId = reader["BookId"].ToString() ?? string.Empty;
+            i.MemberId = reader["MemberId"].ToString() ?? string.Empty;
+            i.BookName = reader["BookName"].ToString() ?? string.Empty;
+            i.MemberName = reader["MemberName"].ToString() ?? string.Empty;
+            i.IssueDate = Convert.ToDateTime(reader["IssueDate"]);
+            i.ReturnDate = reader["ReturnDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["ReturnDate"]);
+            return i;
         }
     }
 }
