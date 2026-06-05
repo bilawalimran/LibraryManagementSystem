@@ -1,4 +1,5 @@
 using App.Core.Services;
+using App.Core.Enums;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -32,27 +33,27 @@ namespace App.WindowsApp.Views
         }
 
         private void LoadSummary()
-        { 
-          {
-            var books = bookService.GetAllBooks();
-            var members = memberService.GetAllMembers();
-            var issues = issueService.GetAllIssues();
-            var reservations = reservationService.GetAllReservations();
+        {
+            {
+                var books = bookService.GetAllBooks();
+                var members = memberService.GetAllMembers();
+                var issues = issueService.GetAllIssues();
+                var reservations = reservationService.GetAllReservations();
 
-            booksCount = books.Count;
-            membersCount = members.Count;
-            activeIssuesCount = issues.Count(issue => !issue.ReturnDate.HasValue);
-            returnedCount = issues.Count(issue => issue.ReturnDate.HasValue);
-            reservationsCount = reservations.Count;
+                booksCount = books.Count;
+                membersCount = members.Count;
+                activeIssuesCount = issues.Count(issue => issue.Status == IssueStatus.Issued);
+                returnedCount = issues.Count(issue => issue.Status == IssueStatus.Returned);
+                reservationsCount = reservations.Count;
 
-            labelBooksCount.Text = booksCount.ToString();
-            labelMembersCount.Text = membersCount.ToString();
-            labelActiveIssuesCount.Text = activeIssuesCount.ToString();
-            labelReturnedCount.Text = returnedCount.ToString();
-            labelReservationsCount.Text = reservationsCount.ToString();
-          }
+                labelBooksCount.Text = booksCount.ToString();
+                labelMembersCount.Text = membersCount.ToString();
+                labelActiveIssuesCount.Text = activeIssuesCount.ToString();
+                labelReturnedCount.Text = returnedCount.ToString();
+                labelReservationsCount.Text = reservationsCount.ToString();
+            }
 
-             RefreshCharts();
+            RefreshCharts();
         }
 
         private void RefreshCharts()

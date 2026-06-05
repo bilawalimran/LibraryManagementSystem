@@ -31,7 +31,6 @@
             labelBook = new Label();
             labelMember = new Label();
             labelIssueDate = new Label();
-            labelQuantity = new Label();
             labelReturnDate = new Label();
             labelId = new Label();
             textBoxId = new TextBox();
@@ -40,10 +39,11 @@
             flowLayoutPanel = new FlowLayoutPanel();
             labelIssueDetails = new Label();
             tableLayoutPanel = new TableLayoutPanel();
+            labelStatus = new Label();
+            textBoxStatus = new TextBox();
             comboBoxBooks = new ComboBox();
             comboBoxMembers = new ComboBox();
             dateTimePickerIssueDate = new DateTimePicker();
-            checkBoxReturned = new CheckBox();
             dateTimePickerReturnDate = new DateTimePicker();
             panelIssueDetails = new Panel();
             flowLayoutPanel.SuspendLayout();
@@ -78,19 +78,10 @@
             labelIssueDate.TabIndex = 2;
             labelIssueDate.Text = "Issue Date";
             // 
-            // labelQuantity
-            // 
-            labelQuantity.AutoSize = true;
-            labelQuantity.Location = new Point(3, 150);
-            labelQuantity.Name = "labelQuantity";
-            labelQuantity.Size = new Size(55, 15);
-            labelQuantity.TabIndex = 3;
-            labelQuantity.Text = "Returned";
-            // 
             // labelReturnDate
             // 
             labelReturnDate.AutoSize = true;
-            labelReturnDate.Location = new Point(3, 200);
+            labelReturnDate.Location = new Point(3, 150);
             labelReturnDate.Name = "labelReturnDate";
             labelReturnDate.Size = new Size(69, 15);
             labelReturnDate.TabIndex = 4;
@@ -140,7 +131,7 @@
             flowLayoutPanel.Controls.Add(buttonSave);
             flowLayoutPanel.Dock = DockStyle.Bottom;
             flowLayoutPanel.FlowDirection = FlowDirection.RightToLeft;
-            flowLayoutPanel.Location = new Point(0, 334);
+            flowLayoutPanel.Location = new Point(0, 358);
             flowLayoutPanel.Name = "flowLayoutPanel";
             flowLayoutPanel.Size = new Size(625, 62);
             flowLayoutPanel.TabIndex = 4;
@@ -163,15 +154,15 @@
             tableLayoutPanel.Controls.Add(labelBook, 0, 0);
             tableLayoutPanel.Controls.Add(labelMember, 0, 1);
             tableLayoutPanel.Controls.Add(labelIssueDate, 0, 2);
-            tableLayoutPanel.Controls.Add(labelQuantity, 0, 3);
-            tableLayoutPanel.Controls.Add(labelReturnDate, 0, 4);
+            tableLayoutPanel.Controls.Add(labelReturnDate, 0, 3);
+            tableLayoutPanel.Controls.Add(labelStatus, 0, 4);
+            tableLayoutPanel.Controls.Add(textBoxStatus, 1, 4);
             tableLayoutPanel.Controls.Add(labelId, 0, 5);
             tableLayoutPanel.Controls.Add(textBoxId, 1, 5);
             tableLayoutPanel.Controls.Add(comboBoxBooks, 1, 0);
             tableLayoutPanel.Controls.Add(comboBoxMembers, 1, 1);
             tableLayoutPanel.Controls.Add(dateTimePickerIssueDate, 1, 2);
-            tableLayoutPanel.Controls.Add(checkBoxReturned, 1, 3);
-            tableLayoutPanel.Controls.Add(dateTimePickerReturnDate, 1, 4);
+            tableLayoutPanel.Controls.Add(dateTimePickerReturnDate, 1, 3);
             tableLayoutPanel.Dock = DockStyle.Fill;
             tableLayoutPanel.Location = new Point(0, 43);
             tableLayoutPanel.Name = "tableLayoutPanel";
@@ -182,8 +173,26 @@
             tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
-            tableLayoutPanel.Size = new Size(625, 353);
+            tableLayoutPanel.Size = new Size(625, 377);
             tableLayoutPanel.TabIndex = 5;
+            // 
+            // labelStatus
+            // 
+            labelStatus.AutoSize = true;
+            labelStatus.Location = new Point(3, 200);
+            labelStatus.Name = "labelStatus";
+            labelStatus.Size = new Size(39, 15);
+            labelStatus.TabIndex = 6;
+            labelStatus.Text = "Status";
+            // 
+            // textBoxStatus
+            // 
+            textBoxStatus.Dock = DockStyle.Fill;
+            textBoxStatus.Location = new Point(128, 203);
+            textBoxStatus.Name = "textBoxStatus";
+            textBoxStatus.ReadOnly = true;
+            textBoxStatus.Size = new Size(494, 23);
+            textBoxStatus.TabIndex = 17;
             // 
             // comboBoxBooks
             // 
@@ -213,21 +222,10 @@
             dateTimePickerIssueDate.Size = new Size(494, 23);
             dateTimePickerIssueDate.TabIndex = 14;
             // 
-            // checkBoxReturned
-            // 
-            checkBoxReturned.AutoSize = true;
-            checkBoxReturned.Location = new Point(128, 153);
-            checkBoxReturned.Name = "checkBoxReturned";
-            checkBoxReturned.Size = new Size(74, 19);
-            checkBoxReturned.TabIndex = 15;
-            checkBoxReturned.Text = "Returned";
-            checkBoxReturned.UseVisualStyleBackColor = true;
-            checkBoxReturned.CheckedChanged += checkBoxReturned_CheckedChanged;
-            // 
             // dateTimePickerReturnDate
             // 
             dateTimePickerReturnDate.Dock = DockStyle.Fill;
-            dateTimePickerReturnDate.Location = new Point(128, 203);
+            dateTimePickerReturnDate.Location = new Point(128, 153);
             dateTimePickerReturnDate.Name = "dateTimePickerReturnDate";
             dateTimePickerReturnDate.Size = new Size(494, 23);
             dateTimePickerReturnDate.TabIndex = 16;
@@ -245,7 +243,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(625, 396);
+            ClientSize = new Size(625, 420);
             Controls.Add(flowLayoutPanel);
             Controls.Add(tableLayoutPanel);
             Controls.Add(panelIssueDetails);
@@ -264,10 +262,11 @@
         private Label labelBook;
         private Label labelMember;
         private Label labelIssueDate;
-        private Label labelQuantity;
         private Label labelReturnDate;
         private Label labelId;
         private TextBox textBoxId;
+        private Label labelStatus;
+        private TextBox textBoxStatus;
         private Button buttonCancel;
         private Button buttonSave;
         private FlowLayoutPanel flowLayoutPanel;
@@ -277,7 +276,6 @@
         private ComboBox comboBoxBooks;
         private ComboBox comboBoxMembers;
         private DateTimePicker dateTimePickerIssueDate;
-        private CheckBox checkBoxReturned;
         private DateTimePicker dateTimePickerReturnDate;
     }
 }

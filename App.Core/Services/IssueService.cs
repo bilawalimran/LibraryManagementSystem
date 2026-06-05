@@ -1,5 +1,6 @@
 using App.Core.Interfaces;
 using App.Core.Models;
+using App.Core.Enums;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -21,13 +22,14 @@ namespace App.Core.Services
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                string sql = "INSERT INTO Issues(Id, BookId, MemberId, IssueDate, ReturnDate) VALUES (@Id, @BookId, @MemberId, @IssueDate, @ReturnDate)";
+                string sql = "INSERT INTO Issues(Id, BookId, MemberId, IssueDate, ReturnDate, Status) VALUES (@Id, @BookId, @MemberId, @IssueDate, @ReturnDate, @Status)";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@Id", issue.Id);
                 cmd.Parameters.AddWithValue("@BookId", issue.BookId);
                 cmd.Parameters.AddWithValue("@MemberId", issue.MemberId);
                 cmd.Parameters.AddWithValue("@IssueDate", issue.IssueDate == default ? DateTime.Now : issue.IssueDate);
                 cmd.Parameters.AddWithValue("@ReturnDate", (object)issue.ReturnDate ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Status", issue.Status.ToString());
                 cmd.ExecuteNonQuery();
             }
         }
@@ -46,6 +48,19 @@ namespace App.Core.Services
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@Id", issueId);
                 cmd.Parameters.AddWithValue("@ReturnDate", returnDate);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void UpdateStatus(string issueId, IssueStatus status)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string sql = "UPDATE Issues SET Status=@Status WHERE Id=@Id";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Id", issueId);
+                cmd.Parameters.AddWithValue("@Status", status.ToString());
                 cmd.ExecuteNonQuery();
             }
         }
@@ -90,6 +105,9 @@ namespace App.Core.Services
             i.MemberName = reader["MemberName"].ToString() ?? string.Empty;
             i.IssueDate = Convert.ToDateTime(reader["IssueDate"]);
             i.ReturnDate = reader["ReturnDate"] == DBNull.Value ? null : Convert.ToDateTime(reader["ReturnDate"]);
+            i.Status = Enum.TryParse(reader["Status"]?.ToString(), out IssueStatus parsedStatus)
+                ? parsedStatus
+                : IssueStatus.Issued;
             return i;
         }
     }

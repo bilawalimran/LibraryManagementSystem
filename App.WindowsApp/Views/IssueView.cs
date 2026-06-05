@@ -1,12 +1,14 @@
+using App.Core.Enums;
 using App.Core.Interfaces;
 using App.Core.Models;
-using App.WindowsApp.Forms;
 using App.Core.Services;
+using App.WindowsApp.Forms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace App.WindowsApp.Views
 {
@@ -39,6 +41,7 @@ namespace App.WindowsApp.Views
             Member.DataPropertyName = nameof(IssueRecord.MemberName);
             IssueDate.DataPropertyName = nameof(IssueRecord.IssueDate);
             ReturnDate.DataPropertyName = nameof(IssueRecord.ReturnDate);
+            Status.DataPropertyName = nameof(IssueRecord.Status);
             dataGridViewIssues.DataSource = _dgvBindingSource;
         }
 
@@ -90,21 +93,49 @@ namespace App.WindowsApp.Views
                 return;
             }
 
-            if (issue.ReturnDate.HasValue)
+            if (issue.Status == IssueStatus.Returned)
             {
-                DialogResult result = MessageBox.Show(
-                    "This book already has a return date. Update it?",
-                    "Return Book",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (result != DialogResult.Yes)
-                {
-                    return;
-                }
+                MessageBox.Show("This book is already marked as returned.", "Return Book", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
 
-            ShowIssueForm(IssueFormModeEnum.Edit, issue);
+            DialogResult result = MessageBox.Show(
+                "Mark the selected book as returned?",
+                "Return Book",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                service.UpdateStatus(issue.Id, IssueStatus.Returned);
+                RefreshGrid();
+            }
+        }
+
+        private void toolStripButtonEdit_Click(object sender, EventArgs e)
+        {
+            IssueRecord? selectedIssue = GetSelectedIssue();
+
+            if (selectedIssue == null)
+            {
+                MessageBox.Show("Please select an issue record to edit.", "Edit Issue", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            ShowIssueForm(IssueFormModeEnum.Edit, selectedIssue);
+        }
+
+        private void toolStripButtonView_Click(object sender, EventArgs e)
+        {
+            IssueRecord? selectedIssue = GetSelectedIssue();
+
+            if (selectedIssue == null)
+            {
+                MessageBox.Show("Please select an issue record to view.", "View Issue", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            ShowIssueForm(IssueFormModeEnum.View, selectedIssue);
         }
 
         private void toolStripButtonDelete_Click(object sender, EventArgs e)

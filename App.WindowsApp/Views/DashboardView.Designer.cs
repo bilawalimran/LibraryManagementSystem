@@ -142,7 +142,7 @@ namespace App.WindowsApp.Views
             // 
             // panelBooks
             // 
-            panelBooks.BackColor = Color.AliceBlue;
+            panelBooks.BackColor = SystemColors.Control;
             panelBooks.BorderStyle = BorderStyle.FixedSingle;
             panelBooks.Controls.Add(labelBooksCount);
             panelBooks.Controls.Add(labelBooksTitle);
@@ -174,7 +174,7 @@ namespace App.WindowsApp.Views
             // 
             // panelMembers
             // 
-            panelMembers.BackColor = Color.Honeydew;
+            panelMembers.BackColor = SystemColors.Control;
             panelMembers.BorderStyle = BorderStyle.FixedSingle;
             panelMembers.Controls.Add(labelMembersCount);
             panelMembers.Controls.Add(labelMembersTitle);
@@ -206,7 +206,7 @@ namespace App.WindowsApp.Views
             // 
             // panelActiveIssues
             // 
-            panelActiveIssues.BackColor = Color.LemonChiffon;
+            panelActiveIssues.BackColor = SystemColors.Control;
             panelActiveIssues.BorderStyle = BorderStyle.FixedSingle;
             panelActiveIssues.Controls.Add(labelActiveIssuesCount);
             panelActiveIssues.Controls.Add(labelActiveIssuesTitle);
@@ -238,7 +238,7 @@ namespace App.WindowsApp.Views
             // 
             // panelReturned
             // 
-            panelReturned.BackColor = Color.MistyRose;
+            panelReturned.BackColor = SystemColors.Control;
             panelReturned.BorderStyle = BorderStyle.FixedSingle;
             panelReturned.Controls.Add(labelReturnedCount);
             panelReturned.Controls.Add(labelReturnedTitle);
@@ -270,7 +270,7 @@ namespace App.WindowsApp.Views
             // 
             // panelReservations
             // 
-            panelReservations.BackColor = Color.Azure;
+            panelReservations.BackColor = SystemColors.Control;
             panelReservations.BorderStyle = BorderStyle.FixedSingle;
             panelReservations.Controls.Add(labelReservationsCount);
             panelReservations.Controls.Add(labelReservationsTitle);

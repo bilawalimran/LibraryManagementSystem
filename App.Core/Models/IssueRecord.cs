@@ -1,4 +1,5 @@
 using System;
+using App.Core.Enums;
 
 namespace App.Core.Models
 {
@@ -16,5 +17,6 @@ namespace App.Core.Models
         public string MemberName { get; set; } = string.Empty;
         public DateTime IssueDate { get; set; } = DateTime.Today;
         public DateTime? ReturnDate { get; set; }
+        public IssueStatus Status { get; set; } = IssueStatus.Issued;
     }
 }

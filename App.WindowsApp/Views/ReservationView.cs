@@ -34,7 +34,7 @@ namespace App.WindowsApp.Views
 
         private void ConfigureGridBinding()
         {
-            dataGridViewReservations.AutoGenerateColumns = false;
+          dataGridViewReservations.AutoGenerateColumns = false;
             Id.DataPropertyName = nameof(Reservation.Id);
             Book.DataPropertyName = nameof(Reservation.BookName);
             Member.DataPropertyName = nameof(Reservation.MemberName);

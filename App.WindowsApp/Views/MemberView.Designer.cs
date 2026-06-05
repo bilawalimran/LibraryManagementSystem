@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             tableLayoutPanel = new TableLayoutPanel();
             toolStripMembers = new ToolStrip();
             toolStripButtonAdd = new ToolStripButton();
@@ -192,7 +193,7 @@
             dataGridViewMembers.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = SystemColors.Control;
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
             dataGridViewCellStyle1.SelectionBackColor = SystemColors.Control;
             dataGridViewCellStyle1.SelectionForeColor = SystemColors.ControlText;
@@ -200,9 +201,17 @@
             dataGridViewMembers.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGridViewMembers.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewMembers.Columns.AddRange(new DataGridViewColumn[] { Id, MemberName, Phone, Email, Address });
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = SystemColors.Window;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
+            dataGridViewCellStyle2.ForeColor = SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = Color.Black;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
+            dataGridViewMembers.DefaultCellStyle = dataGridViewCellStyle2;
             dataGridViewMembers.Dock = DockStyle.Fill;
             dataGridViewMembers.EnableHeadersVisualStyles = false;
-            dataGridViewMembers.GridColor = Color.WhiteSmoke;
+            dataGridViewMembers.GridColor = Color.White;
             dataGridViewMembers.Location = new Point(3, 112);
             dataGridViewMembers.MultiSelect = false;
             dataGridViewMembers.Name = "dataGridViewMembers";
