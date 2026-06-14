@@ -92,13 +92,13 @@ namespace App.Core.Services
             return null;
         }
 
-        public List<Book> SearchBooks(string filterType, string keyword)
+        public List<Book> SearchBooks(string keyword)
         {
             List<Book> books = new List<Book>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                string sql = $"SELECT * FROM Books WHERE {filterType} LIKE @Keyword";
+                string sql = "SELECT * FROM Books WHERE Title LIKE @Keyword OR Author LIKE @Keyword OR Category LIKE @Keyword";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@Keyword", "%" + keyword + "%");
                 using (SqlDataReader reader = cmd.ExecuteReader())
