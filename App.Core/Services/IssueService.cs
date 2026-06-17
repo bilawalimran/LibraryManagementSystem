@@ -34,12 +34,7 @@ namespace App.Core.Services
             }
         }
 
-        public void ReturnBook(string issueId)
-        {
-            ReturnBook(issueId, DateTime.Now);
-        }
-
-        public void ReturnBook(string issueId, DateTime returnDate)
+        public void ReturnBook(string issueId, DateTime? returnDate = null)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -47,7 +42,7 @@ namespace App.Core.Services
                 string sql = "UPDATE Issues SET ReturnDate=@ReturnDate WHERE Id=@Id";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@Id", issueId);
-                cmd.Parameters.AddWithValue("@ReturnDate", returnDate);
+                cmd.Parameters.AddWithValue("@ReturnDate", returnDate ?? DateTime.Now);
                 cmd.ExecuteNonQuery();
             }
         }

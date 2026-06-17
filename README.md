@@ -1,15 +1,33 @@
-# Library Management System
+# BookVerse — Library Management System
 
-A desktop Library Management System built with **C# and .NET 10 (Windows Forms)**. It lets a librarian manage books, members, book issue/return, and reservations from a single dashboard, with all data persisted in **SQL Server**.
+A desktop Library Management System built with **C# and .NET 10 (Windows Forms)**. It lets a librarian manage books, members, book issue/return, and reservations from a single dashboard ("BookVerse"), with all data persisted in **SQL Server**.
 
 The solution is organised into two projects following an MVC-like separation: a reusable core library for the domain and data access, and a Windows Forms front end for the UI.
 
 ---
 
+## Project Information
+
+| | |
+|---|---|
+| **Project Title** | BookVerse — Library Management System |
+| **Platform** | C# / .NET 10 — Windows Forms Desktop Application |
+| **Database** | SQL Server (ADO.NET via `Microsoft.Data.SqlClient`) |
+
+### Group Members
+
+| Name | Roll No | Role |
+|------|---------|------|
+| **Haroon Khan** | F23BDOCS1M01172 | Group Leader |
+| Bilawal Imran | F23BDOCS1M01065 | Member |
+| Bisma Sharif | F23BDOCS1M01054 | Member |
+
+---
+
 ## Features
 
-- **Dashboard** – At-a-glance summary cards (total books, members, active issues, returned, reservations) plus charts, with a refresh button.
-- **Books** – Full CRUD and search by field (title, author, category, etc.) using SQL `LIKE` queries.
+- **Dashboard** – At-a-glance summary counts (total books, members, active issues, returned, reservations) shown in a status strip, with a refresh action.
+- **Books** – Full CRUD and search by field (title, author, category) using SQL `LIKE` queries.
 - **Members** – Add, edit, delete, and list library members.
 - **Issue / Return** – Issue a book to a member, mark it as returned (with an optional return date), and track each record's status (`Issued` / `Returned`).
 - **Reservations** – Create, edit, delete, and list reservations with a lifecycle status (`Pending`, `Approved`, `Cancelled`, `Completed`, `Expired`).
@@ -23,7 +41,7 @@ The solution is organised into two projects following an MVC-like separation: a 
 |-------|-----------|
 | Language / Runtime | C#, .NET 10 |
 | UI | Windows Forms (`net10.0-windows`) |
-| Data access | ADO.NET via `Microsoft.Data.SqlClient` (parameterized SQL) |
+| Data access | ADO.NET via `Microsoft.Data.SqlClient` 7.0.1 (parameterized SQL) |
 | Database | SQL Server |
 | Configuration | `System.Configuration.ConfigurationManager` (`App.config`) |
 
@@ -42,12 +60,11 @@ LibraryManagementSystem/
 └── App.WindowsApp/               # WinForms application (entry point)
     ├── Forms/                    # DashboardForm + edit dialogs (BookForm, MemberForm, …)
     ├── Views/                    # UserControl views hosted in the dashboard panel
-    ├── Utilities/
-    ├── Resources/
+    ├── Resources/                # Icons and images
     └── App.config                # Connection string lives here
 ```
 
-**How it fits together:** `App.WindowsApp` references `App.Core`. `DashboardForm` acts as a shell that swaps `UserControl` views (Books, Members, Issue/Return, Reservations) into a content panel. Each view talks to an `App.Core` service, and each service opens its own `SqlConnection` and runs parameterized SQL against SQL Server.
+**How it fits together:** `App.WindowsApp` references `App.Core`. The entry point (`Program.cs`) launches `DashboardForm`, which acts as a shell that swaps `UserControl` views (Books, Members, Issue/Return, Reservations) into a content panel. Each view talks to an `App.Core` service, and each service opens its own `SqlConnection` and runs parameterized SQL against SQL Server.
 
 ---
 
@@ -57,10 +74,15 @@ LibraryManagementSystem/
 |--------|-----------|
 | **Book** | Id, Title, Author, Quantity, Category, PublishedDate |
 | **Member** | Id, Name, Email, Phone, Address |
-| **IssueRecord** | Id, BookId, MemberId, IssueDate, ReturnDate?, Status |
-| **Reservation** | Id, BookId, MemberId, ReservationDate, ExpiryDate?, Status |
+| **IssueRecord** | Id, BookId, MemberId, BookName, MemberName, IssueDate, ReturnDate?, Status |
+| **Reservation** | Id, BookId, MemberId, BookName, MemberName, ReservationDate, ExpiryDate?, Status |
 
-Enums: `BookCategory` (Science, Programming, History, Fiction, Biography, Novel, Poetry, Technology), `IssueStatus` (Issued, Returned), `ReservationStatus` (Pending, Approved, Cancelled, Completed, Expired). Enum values are stored as strings and parsed back with `Enum.TryParse`.
+Enums:
+- `BookCategory` — Science, Programming, History, Fiction, Biography, Novel, Poetry, Technology
+- `IssueStatus` — Issued, Returned
+- `ReservationStatus` — Pending, Approved, Cancelled, Completed, Expired
+
+Enum values are stored as strings and parsed back with `Enum.TryParse`.
 
 ---
 
@@ -106,7 +128,9 @@ CREATE TABLE Issues (
     MemberId   NVARCHAR(20),
     IssueDate  DATE,
     ReturnDate DATE NULL,
-    Status     NVARCHAR(20)
+    Status     NVARCHAR(20),
+    CONSTRAINT FK_Issues_Books   FOREIGN KEY (BookId)   REFERENCES Books(Id),
+    CONSTRAINT FK_Issues_Members FOREIGN KEY (MemberId) REFERENCES Members(Id)
 );
 
 CREATE TABLE Reservations (
@@ -115,11 +139,13 @@ CREATE TABLE Reservations (
     MemberId        NVARCHAR(20),
     ReservationDate DATE,
     ExpiryDate      DATE NULL,
-    Status          NVARCHAR(20)
+    Status          NVARCHAR(20),
+    CONSTRAINT FK_Reservations_Books   FOREIGN KEY (BookId)   REFERENCES Books(Id),
+    CONSTRAINT FK_Reservations_Members FOREIGN KEY (MemberId) REFERENCES Members(Id)
 );
 ```
 
-> The Issue/Return view joins `Issues` to `Books` and `Members` to display book and member names, so make sure the referenced IDs line up.
+> `Issues` and `Reservations` reference `Books(Id)` and `Members(Id)` via foreign keys, so the parent `Books` and `Members` tables must be created first (as ordered above), and a book or member can't be deleted while it's still referenced by an issue or reservation. The Issue/Return and Reservation views `LEFT JOIN` to `Books` and `Members` to display book and member names.
 
 ### 2. Configure the connection string
 
@@ -137,7 +163,7 @@ Update `Server=` to match your SQL Server instance (e.g. `localhost\SQLEXPRESS` 
 
 ### 3. Build and run
 
-**Visual Studio:** open the solution, set `App.WindowsApp` as the startup project, and press F5.
+**Visual Studio:** open `LibraryManagementSystem.slnx`, set `App.WindowsApp` as the startup project, and press F5.
 
 **.NET CLI (on Windows):**
 
