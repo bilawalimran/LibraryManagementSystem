@@ -89,6 +89,23 @@ namespace App.Core.Services
             return null;
         }
 
+        public List<Member> SearchMembers(string keyword)
+        {
+            List<Member> members = new List<Member>();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string sql = "SELECT * FROM Members WHERE Name LIKE @Keyword OR Email LIKE @Keyword OR Phone LIKE @Keyword OR Address LIKE @Keyword";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Keyword", "%" + keyword + "%");
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read()) members.Add(ReadMember(reader));
+                }
+            }
+            return members;
+        }
+
         private Member ReadMember(SqlDataReader reader)
         {
             Member m = new Member();

@@ -101,6 +101,27 @@ namespace App.Core.Services
             return null;
         }
 
+        public List<Reservation> SearchReservations(string keyword)
+        {
+            List<Reservation> reservations = new List<Reservation>();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string sql = @"SELECT r.*, b.Title AS BookName, m.Name AS MemberName
+                               FROM Reservations r
+                               LEFT JOIN Books b ON r.BookId = b.Id
+                               LEFT JOIN Members m ON r.MemberId = m.Id
+                               WHERE b.Title LIKE @Keyword OR m.Name LIKE @Keyword OR r.Status LIKE @Keyword";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Keyword", "%" + keyword + "%");
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read()) reservations.Add(ReadReservation(reader));
+                }
+            }
+            return reservations;
+        }
+
         private Reservation ReadReservation(SqlDataReader reader)
         {
             Reservation r = new Reservation();

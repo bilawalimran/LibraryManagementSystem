@@ -10,5 +10,6 @@ namespace App.Core.Interfaces
         void DeleteReservation(string id);
         List<Reservation> GetAllReservations();
         Reservation? GetReservationById(string id);
+        List<Reservation> SearchReservations(string keyword);
     }
 }

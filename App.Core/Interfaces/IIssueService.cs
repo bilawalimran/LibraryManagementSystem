@@ -13,6 +13,7 @@ namespace App.Core.Interfaces
         void UpdateStatus(string issueId, IssueStatus status);
         void DeleteIssue(string issueId);
         List<IssueRecord> GetAllIssues();
+        List<IssueRecord> SearchIssues(string keyword);
 
     }
 }

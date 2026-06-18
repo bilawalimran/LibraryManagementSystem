@@ -90,6 +90,27 @@ namespace App.Core.Services
             return issues;
         }
 
+        public List<IssueRecord> SearchIssues(string keyword)
+        {
+            List<IssueRecord> issues = new List<IssueRecord>();
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string sql = @"SELECT i.*, b.Title AS BookName, m.Name AS MemberName
+                               FROM Issues i
+                               LEFT JOIN Books b ON i.BookId = b.Id
+                               LEFT JOIN Members m ON i.MemberId = m.Id
+                               WHERE b.Title LIKE @Keyword OR m.Name LIKE @Keyword OR i.Status LIKE @Keyword";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@Keyword", "%" + keyword + "%");
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read()) issues.Add(ReadIssue(reader));
+                }
+            }
+            return issues;
+        }
+
         private IssueRecord ReadIssue(SqlDataReader reader)
         {
             IssueRecord i = new IssueRecord();
